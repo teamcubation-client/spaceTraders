@@ -1,16 +1,21 @@
 package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.requests.HttpRequests;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
+        HttpRequests httpRequests = new HttpRequests();
+
+        //httpRequests.registerNewAgent();
+        httpRequests.getContracts();
+        //httpRequests.acceptContract();
+        //httpRequests.listWaypointsInSystem();
+        //httpRequests.listShips();
+        //httpRequests.getShip();
+
+
+        /*
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -30,5 +35,6 @@ public class Main {
         }
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
         System.out.println(data.getToken());
+         */
     }
 }
