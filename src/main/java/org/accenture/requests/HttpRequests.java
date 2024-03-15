@@ -1,16 +1,26 @@
 package org.accenture.requests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.accenture.entities.Contract;
+import org.accenture.entities.responses.ResponseBody;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HttpRequests {
-    private Map<String, String> getContractsResponse = new HashMap<>();
+
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    private List<Contract> contracts = new ArrayList<>();
+
 
     private String ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiU0hFUEVSRCIsInZlcnNpb24iOiJ2Mi4yLjAiLCJyZXNldF9kYXRlIjoiMjAyNC0wMy0xMCIsImlhdCI6MTcxMDQzNzg5OCwic3ViIjoiYWdlbnQtdG9rZW4ifQ.fxhJt-AuBZwn_gbMDj8Kuy96MqIP868eOw6fpzFv-Kr2Osj76Ax8vVT2sk3NowrP1V7k3l0Qrdz6P0DJn1tpBtxuiT3CF0GWOJa6SBpUueEEIuRVRpTqJeApvjkshhVlZ-Tmda3sZA45wS4bMq9QOTxmvF9xbUgn8XXiT2Y_qlq9RNh7r7AP8tZ5RbJRc1eW7V7BrJKD1FCGdNi24-JqlFBuSnj03_yP0nxy6CW2qUX_uMj0hiFka41zH7t5IqJREEWNe7Li36yif7L9aWHae7DtSs4F3QX4W3j29C1UppNYFVGO_tS_99Zg6izYrVGx2mXe00Bsjig10NcMrEPGqA";
     private String REGISTER_NEW_AGENT = "https://api.spacetraders.io/v2/register";
@@ -31,14 +41,27 @@ public class HttpRequests {
         System.out.println(response.getBody());
     }
 
-    public void getContracts() throws JsonProcessingException {
+    public void getContractsList() throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
         HttpResponse<String> response = Unirest.get(LIST_CONTRACTS)
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
                 .asString();
 
-        getContractsResponse = objectMapper.readValue(response.getBody(), HashMap.class);
-        System.out.println(getContractsResponse);
+        ResponseBody data = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (data.getError() != null) {
+            System.out.println(data.getError().getMessage());
+        }
+
+        for (JsonNode node : data.getData()) {
+            contracts = Stream.of(data).map(contract -> objectMapper.convertValue(node, Contract.class))
+                    .collect(Collectors.toList());
+        }
+
+        System.out.println(contracts);
+
     }
 
     public void acceptContract() {

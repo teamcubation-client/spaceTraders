@@ -8,8 +8,8 @@ public class Main {
         HttpRequests httpRequests = new HttpRequests();
 
         //httpRequests.registerNewAgent();
-        httpRequests.getContracts();
-        //httpRequests.acceptContract();
+        //httpRequests.getContractsList();
+        httpRequests.acceptContract();
         //httpRequests.listWaypointsInSystem();
         //httpRequests.listShips();
         //httpRequests.getShip();
