@@ -17,8 +17,8 @@ public class Main {
         AcceptContractResponse acceptContract;
 
         registerNewAgent = registerNewAgent();
-        System.out.println(registerNewAgent.getToken());
-        System.out.println(registerNewAgent.getContract().getId());
+        printDataRegisterNewAgent(registerNewAgent);
+
         acceptContract = acceptContract(registerNewAgent.getToken(), registerNewAgent.getContract().getId());
         System.out.println(acceptContract.getContract().isAccepted());
 
@@ -49,6 +49,22 @@ public class Main {
         return data;
     }
 
+    private static void printDataRegisterNewAgent(RegisterNewAgentResponse data){
+        System.out.println("token");
+        System.out.println(data.getToken());
+
+        System.out.println("contract");
+        System.out.println(data.getContract().getId());
+        System.out.println(data.getContract().getFactionSymbol());
+        System.out.println(data.getContract().getType());
+        System.out.println(data.getContract().getTerms());
+
+        System.out.println("system symbol");
+        System.out.println(data.getAgent().getSymbol());
+
+        System.out.println("ship symbol");
+        System.out.println(data.getShip().getSymbol());
+    }
     private static AcceptContractResponse acceptContract(String token, String contractId) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
