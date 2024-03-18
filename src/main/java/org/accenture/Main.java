@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
@@ -30,5 +31,19 @@ public class Main {
         }
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
         System.out.println(data.getToken());
+
+        HttpResponse<String> contractResponse = Unirest.post("https://api.spacetraders.io/v2/my/contracts/"+data.getContract()+"/accept")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", ""+data.getToken())
+                .asString();
+
+        ResponseBody contractbody = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return;
+        }
+        AcceptContractResponse contractData = mapper.convertValue(body.getData(), AcceptContractResponse.class);
+        System.out.println(data.getContract());
     }
 }
