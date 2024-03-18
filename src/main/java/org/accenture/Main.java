@@ -20,8 +20,7 @@ public class Main {
         printDataRegisterNewAgent(registerNewAgent);
 
         acceptContract = acceptContract(registerNewAgent.getToken(), registerNewAgent.getContract().getId());
-        System.out.println(acceptContract.getContract().isAccepted());
-
+        printDataAcceptContract(acceptContract);
     }
 
 
@@ -84,10 +83,8 @@ public class Main {
         AcceptContractResponse data = mapper.convertValue(body.getData(), AcceptContractResponse.class);
         return data;
     }
-
-
-
-
-/*
- */
+    private static void printDataAcceptContract(AcceptContractResponse data){
+        System.out.print("AcceptContract: ");
+        System.out.println(data.getContract().isAccepted());
+    }
 }
