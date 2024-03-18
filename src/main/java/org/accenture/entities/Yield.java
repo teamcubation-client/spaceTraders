@@ -1,8 +1,10 @@
 package org.accenture.entities;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class Yield {
     private Symbol symbol;
     private int units;
