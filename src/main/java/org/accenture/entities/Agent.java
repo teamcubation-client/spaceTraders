@@ -1,8 +1,10 @@
 package org.accenture.entities;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Agent {
     private String accountId;
     private String symbol;
