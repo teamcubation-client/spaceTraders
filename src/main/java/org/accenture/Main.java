@@ -6,10 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
 public class Main {
+
+    String postNewAgent = "https://api.spacetraders.io/v2/register";
+    String postAcceptContract = "https://api.spacetraders.io/v2/my/contracts/{contractId}/accept";
+    String getListWaypointsInSystem = "https://api.spacetraders.io/v2/systems/{systemSymbol}/waypoints";
+
+
+
     public static void main(String[] args) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -17,18 +25,61 @@ public class Main {
 
         String agentName = "TQ" + (int) (Math.random() * 1000000);
 
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
-                .asString();
 
-        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
-        if (body.getError() != null) {
-            System.out.println(body.getError().getMessage());
-            return;
+        int i;
+        HttpResponse<String> response = null;
+
+        String token = null;
+
+        for (i =0; i==2;i++);{
+            switch (i){
+                case 0:
+                    response = Unirest.post("https://api.spacetraders.io/v2/register")
+                            .header("Content-Type", "application/json")
+                            .header("Accept", "application/json")
+                            .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
+                            .asString();
+                    ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+                    RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
+                    token = "Bearer" + data.getToken();
+                    System.out.println("Agente creado y Contrato aceptado");
+
+                    break;
+                case 1:
+                    response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/contractId/accept")
+                            .header("Content-Type", "application/json")
+                            .header("Accept", "application/json")
+                            .header("Authorization", token)
+                            .asString();
+                    ResponseBody body1 = mapper.readValue(response.getBody(), ResponseBody.class);
+                    AcceptContractResponse contract = mapper.convertValue(body1.getData(), AcceptContractResponse.class);
+                    break;
+                case 2:
+                    System.out.println("Agente creado y Contrato aceptado");
+                    break;
+            }
+
         }
-        RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        System.out.println(data.getToken());
+
+
+
+//            HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
+//                    .header("Content-Type", "application/json")
+//                    .header("Accept", "application/json")
+//                    .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
+//                    .asString();
+
+//        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+
+//        if (body.getError() != null) {
+//            System.out.println(body.getError().getMessage());
+//            return;
+//        }
+
+        //System.out.println(data.getToken());
+
+
+
+
     }
 }
