@@ -9,10 +9,11 @@ public class Main {
 
         //httpRequests.registerNewAgent();
         //httpRequests.getContractsList();
-        httpRequests.acceptContract();
+        //httpRequests.acceptContract();
         //httpRequests.listWaypointsInSystem();
         //httpRequests.listShips();
-        //httpRequests.getShip();
+        httpRequests.getShip("SHEPERD-1");
+        //httpRequests.moveShipToOrbit();
 
 
         /*
