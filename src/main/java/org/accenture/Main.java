@@ -87,6 +87,7 @@ public class Main {
         System.out.println("Trade Symbol:"+data.getContract().getTerms().getDeliver()[0].getTradeSymbol());
         System.out.println("Unit Requires:"+data.getContract().getTerms().getDeliver()[0].getUnitsRequired());
         System.out.println("Destination Symbol:"+data.getContract().getTerms().getDeliver()[0].getDestinationSymbol());
+        System.out.println("System Symbol:"+data.getShip().getNav().getSystemSymbol());
         System.out.println("Ship Symbol:"+data.getShip().getSymbol());
         return data;
     }
