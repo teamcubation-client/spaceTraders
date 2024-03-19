@@ -11,6 +11,7 @@ import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
+import org.accenture.exceptions.ContractDeclinedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,27 +30,17 @@ public class Main {
         if (data == null) return;
         ResponseBody body;
 
-        //Aceptar contrato
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/{contractId}/accept")
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .header("Authorization", "Bearer "+data.getToken())
-                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
-                .routeParam("contractId", data.getContract().getId())
-                .asString();
-
-        body = mapper.readValue(response.getBody(), ResponseBody.class);
-        if (body.getError() != null) {
-            System.out.println(body.getError().getMessage());
-            return;
+        //Accept contract
+        AcceptContractResponse dataAcceptContractResponse = getAcceptContractResponse(mapper, agentName, data);
+        if (dataAcceptContractResponse == null) return;
+        if(!dataAcceptContractResponse.getContract().isAccepted()){
+            throw new ContractDeclinedException();
         }
-        AcceptContractResponse dataAcceptContractResponse = mapper.convertValue(body.getData(), AcceptContractResponse.class);
-        System.out.println(dataAcceptContractResponse.getContract().getId());
 
         String[] headquarter = dataAcceptContractResponse.getAgent().getHeadquarters().split("-");
         var headquarterPart = headquarter[0] + "-" + headquarter[1];
 
-        response = Unirest.get("https://api.spacetraders.io/v2/systems/{systemSymbol}/waypoints")
+        HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/systems/{systemSymbol}/waypoints")
                 .routeParam("systemSymbol", headquarterPart)
                 .queryString("type", "ENGINEERED_ASTEROID")
                 .asString();
@@ -67,6 +58,25 @@ public class Main {
         }
         System.out.println("Primer Lista de traits - tamaño: "+listOfWayPoints.get(0).getTraits().length);
 
+    }
+
+    private static AcceptContractResponse getAcceptContractResponse(ObjectMapper mapper, String agentName, RegisterNewAgentResponse data) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/{contractId}/accept")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("contractId", data.getContract().getId())
+                .asString();
+
+        body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return null;
+        }
+        AcceptContractResponse dataAcceptContractResponse = mapper.convertValue(body.getData(), AcceptContractResponse.class);
+        System.out.println("Contract accepted: " + dataAcceptContractResponse.getContract().isAccepted());
+        return dataAcceptContractResponse;
     }
 
     private static RegisterNewAgentResponse getRegisterNewAgentResponse(ObjectMapper mapper, String agentName) throws JsonProcessingException {
