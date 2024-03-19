@@ -17,7 +17,7 @@ public class Main {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
-        String agentName = "TQ" + (int) (Math.random() * 1000000);
+        String agentName = "Cami" + (int) (Math.random() * 1000000);
 
 //registerNewAgent
         HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
@@ -30,21 +30,24 @@ public class Main {
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
         System.out.println("Agent " + agentName + " registered");
-        String token = "Bearer" + data.getToken();
+        String token = "Bearer " + data.getToken();
+        String tradeSymbol = data.getContract().getTerms().getDeliver()[0].getTradeSymbol();
+        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
         String contractId = String.valueOf(data.getContract().getId());
+
+        int unitRequired = data.getContract().getTerms().getDeliver()[0].getUnitsRequired();
+
         String shipSymbol = String.valueOf(data.getShip().getSymbol());
 
-        //acceptContract
-        HttpResponse<String> acceptContract = Unirest.post("https://api.spacetraders.io/v2/my/contracts/" + contractId + "/accept")
-                    .header("Content-Type", "application/json")
-                    .header("Accept", "application/json")
-                    .header("Authorization", token)
-                    .asString();
+        String systemSymbol = String.valueOf(data.getFaction().getHeadquarters());
 
-        ResponseBody bodyContract = mapper.readValue(acceptContract.getBody(),ResponseBody.class);
-        AcceptContractResponse contractResponse = mapper.convertValue(bodyContract.getData(), AcceptContractResponse.class);
-        System.out.println("Contract " + contractId + " accepted");
-
+        System.out.println("Token: " + token +"\n" +
+                "Contract ID: " + contractId + "\n"+
+                "Trade Symbol: "+ tradeSymbol + "\n" +
+                "Unit Required: " + unitRequired+ "\n" +
+                "Destination Symbol: "+ destinationSymbol + "\n"+
+        "System Symbol: " + systemSymbol + "\n" +
+                "Ship Symbol: " + shipSymbol);
 
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
@@ -54,7 +57,33 @@ public class Main {
 
 
 
+        //acceptContract
+//        HttpResponse<String> acceptContract = Unirest.post("https://api.spacetraders.io/v2/my/contracts/" + contractId + "/accept")
+//                    .header("Content-Type", "application/json")
+//                    .header("Accept", "application/json")
+//                    .header("Authorization", token)
+//                    .asString();
+//
+//        ResponseBody bodyContract = mapper.readValue(acceptContract.getBody(),ResponseBody.class);
+//        AcceptContractResponse contractResponse = mapper.convertValue(bodyContract.getData(), AcceptContractResponse.class);
+//        System.out.println("Contract " + contractId + " accepted");
+//
+//
 
+//
+//
+//            }
+//
+//            public void orbitShip(String token, String shipSymbol){
+//                HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/{shipSymbol}/orbit")
+//                        .header("Content-Type", "application/json")
+//                        .header("Accept", "application/json")
+//                        .header("Authorization", token)
+//                        .routeParam("shipSymbol", shipSymbol)
+//                        .asString();
+//
+//
+//
             }
 
 
