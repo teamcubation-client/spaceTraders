@@ -24,22 +24,13 @@ public class Main {
 
         String agentName = "TQ" + (int) (Math.random() * 1000000);
 
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
-                .asString();
-
-        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
-        if (body.getError() != null) {
-            System.out.println(body.getError().getMessage());
-            return;
-        }
-        RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        System.out.println(data.getToken());
+        //New agent
+        RegisterNewAgentResponse data = getRegisterNewAgentResponse(mapper, agentName);
+        if (data == null) return;
+        ResponseBody body;
 
         //Aceptar contrato
-        response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/{contractId}/accept")
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/{contractId}/accept")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer "+data.getToken())
@@ -76,5 +67,28 @@ public class Main {
         }
         System.out.println("Primer Lista de traits - tamaño: "+listOfWayPoints.get(0).getTraits().length);
 
+    }
+
+    private static RegisterNewAgentResponse getRegisterNewAgentResponse(ObjectMapper mapper, String agentName) throws JsonProcessingException {
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return null;
+        }
+        RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
+        System.out.println("Token: "+data.getToken());
+        System.out.println("Contract Id:"+data.getContract().getId());
+        System.out.println("Trade Symbol:"+data.getContract().getTerms().getDeliver()[0].getTradeSymbol());
+        System.out.println("Unit Requires:"+data.getContract().getTerms().getDeliver()[0].getUnitsRequired());
+        System.out.println("Destination Symbol:"+data.getContract().getTerms().getDeliver()[0].getDestinationSymbol());
+        System.out.println("System Symbol:"+data.getShip().getNav().getSystemSymbol());
+        System.out.println("Ship Symbol:"+data.getShip().getSymbol());
+        return data;
     }
 }
