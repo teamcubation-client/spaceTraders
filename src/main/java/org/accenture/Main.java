@@ -14,24 +14,24 @@ import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
 //import static org.accenture.entities.responses.AllResponses.agentEndpoint;
+import static org.accenture.entities.responses.AllResponses.acceptContract;
 import static org.accenture.entities.responses.AllResponses.registerEndpoint;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
         RegisterNewAgentResponse registerNewAgentResponse = registerEndpoint();
-        //System.out.println(registerNewAgentResponse);
+        System.out.println("REGISTER NEW AGENT: " + registerNewAgentResponse);
         String token = registerNewAgentResponse.getToken();
         Contract contract = registerNewAgentResponse.getContract();
-        String contractId = registerNewAgentResponse.getContract().getId();
-        System.out.println("Token: " + token);
-        System.out.println("Contract: " + contract);
-        System.out.println("Ship symbol: " + registerNewAgentResponse.getShip().getSymbol());
-        System.out.println("System symbol:" + registerNewAgentResponse.getShip().getNav().getSystemSymbol());
-        System.out.println("Agent headquarter: " + registerNewAgentResponse.getAgent().getHeadquarters());
+        String tradeSymbol = registerNewAgentResponse.getContract().getTerms().getDeliver()[0].getTradeSymbol();
+        String shipSymbol = registerNewAgentResponse.getShip().getSymbol();
+        String systemSymbol = registerNewAgentResponse.getAgent().getHeadquarters();
+        systemSymbol = systemSymbol.substring(0, systemSymbol.length() - 3);
 
-        AcceptContractResponse acceptContractResponse = AllResponses.acceptContract(token);
-        Contract responseContract = acceptContractResponse.getContract();
-        System.out.println(responseContract.isAccepted());
+        System.out.println("System symbol: " + systemSymbol);
+
+        boolean checkAccept = acceptContract(token);
+        System.out.println("ACCEPT CONTRACT: " + checkAccept);
 
     }
 }

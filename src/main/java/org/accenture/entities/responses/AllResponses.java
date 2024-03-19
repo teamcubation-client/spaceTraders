@@ -9,6 +9,7 @@ import kong.unirest.Unirest;
 import org.accenture.entities.Agent;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Nav;
+import org.accenture.entities.Point;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
@@ -33,13 +34,13 @@ public class AllResponses {
             System.out.println(body.getError().getMessage());
         }
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        registerNewAgentResponse.setContract(data.getContract());
+        /*registerNewAgentResponse.setContract(data.getContract());
         registerNewAgentResponse.setAgent(data.getAgent());
         registerNewAgentResponse.setToken(data.getToken());
         registerNewAgentResponse.setShip(data.getShip());
-        registerNewAgentResponse.setFaction(data.getFaction());
+        registerNewAgentResponse.setFaction(data.getFaction());*/
 
-        return registerNewAgentResponse;
+        return data;
     }
 
     public static Agent agentEndpoint(String token) throws JsonProcessingException {
@@ -71,7 +72,7 @@ public class AllResponses {
     }
 
 
-    public static AcceptContractResponse acceptContract(String token) throws JsonProcessingException {
+    public static Boolean acceptContract(String token) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -86,13 +87,29 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        Contract contract = mapper.convertValue(body.getData(), Contract.class);
-        Agent agent = mapper.convertValue(body.getData(), Agent.class);
+        AcceptContractResponse acceptContractResponse = mapper.convertValue(body.getData(), AcceptContractResponse.class);
+        Contract contract = acceptContractResponse.getContract();
 
-        AcceptContractResponse acceptContractResponse = new AcceptContractResponse();
-        acceptContractResponse.setContract(contract);
-        acceptContractResponse.setAgent(agent);
-
-        return acceptContractResponse;
+        return contract.isAccepted();
     }
+
+    /*
+    public ListWaypointsResponse waypointsResponse(String systemSymbol, String type) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/systems/" + systemSymbol + "/waypoints?type=" + type)
+                .header("Accept", "application/json")
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+        Point point = mapper.convertValue(body.getData(), Point.class);
+
+        //waypointsResponse().set
+        //return point;
+    }*/
 }
