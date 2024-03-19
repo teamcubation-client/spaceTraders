@@ -31,8 +31,7 @@ public class Main {
 
         AcceptContractResponse acceptContractResponse = AllResponses.acceptContract(token);
         Contract responseContract = acceptContractResponse.getContract();
-        boolean checkAccepted = responseContract.isAccepted();
-        System.out.println(checkAccepted);
+        System.out.println(responseContract.isAccepted());
 
     }
 }
