@@ -72,12 +72,12 @@ public class AllResponses {
     }
 
 
-    public static Boolean acceptContract(String token) throws JsonProcessingException {
+    public static Boolean acceptContract(String token, String contractId) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/contractId/accept")
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/" + contractId + "/accept")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + token)
