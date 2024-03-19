@@ -15,10 +15,11 @@ import static org.accenture.entities.responses.AllResponses.registerEndpoint;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
-        String token = registerEndpoint();
-        System.out.println("Token: "+ token);
+        RegisterNewAgentResponse registerNewAgentResponse = registerEndpoint();
+        System.out.println(registerNewAgentResponse);
+        String token = registerNewAgentResponse.getToken();
 
-        Agent agent = agentEndpoint(token);
-        System.out.println(agent);
+        Agent agentResult = agentEndpoint(token);
+        System.out.println(agentResult);
     }
 }

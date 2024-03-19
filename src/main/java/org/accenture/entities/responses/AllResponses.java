@@ -12,8 +12,9 @@ import org.accenture.entities.responses.ResponseBody;
 
 public class AllResponses {
 
-    public static String registerEndpoint() throws JsonProcessingException {
+    public static RegisterNewAgentResponse registerEndpoint() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
+        RegisterNewAgentResponse registerNewAgentResponse = new RegisterNewAgentResponse();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
@@ -27,10 +28,16 @@ public class AllResponses {
 
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
-            return body.getError().getMessage();
+            System.out.println(body.getError().getMessage());
         }
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        return data.getToken();
+        registerNewAgentResponse.setToken(data.getToken());
+        registerNewAgentResponse.setContract(data.getContract());
+        registerNewAgentResponse.setAgent(data.getAgent());
+        registerNewAgentResponse.setFaction(data.getFaction());
+        registerNewAgentResponse.setShip(data.getShip());
+
+        return registerNewAgentResponse;
     }
 
     public static Agent agentEndpoint(String token) throws JsonProcessingException {
