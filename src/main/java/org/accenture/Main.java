@@ -39,14 +39,14 @@ public class Main {
 
         String shipSymbol = String.valueOf(data.getShip().getSymbol());
 
-        String systemSymbol = String.valueOf(data.getFaction().getHeadquarters());
+        String systemSymbol = String.valueOf(data.getShip().getNav().getSystemSymbol());
 
         System.out.println("Token: " + token +"\n" +
                 "Contract ID: " + contractId + "\n"+
                 "Trade Symbol: "+ tradeSymbol + "\n" +
                 "Unit Required: " + unitRequired+ "\n" +
                 "Destination Symbol: "+ destinationSymbol + "\n"+
-        "System Symbol: " + systemSymbol + "\n" +
+                "System Symbol: " + systemSymbol + "\n" +
                 "Ship Symbol: " + shipSymbol);
 
         if (body.getError() != null) {
