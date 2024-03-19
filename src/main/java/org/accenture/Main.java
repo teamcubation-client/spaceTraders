@@ -1,19 +1,24 @@
 package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.accenture.entities.Agent;
+import org.accenture.entities.Contract;
+import org.accenture.entities.Ship;
+import org.accenture.entities.responses.RegisterNewAgentResponse;
+import org.accenture.entities.responses.ResponseBody;
 import org.accenture.requests.HttpRequests;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
         HttpRequests httpRequests = new HttpRequests();
 
-        //httpRequests.registerNewAgent();
-        //httpRequests.getContractsList();
-        //httpRequests.acceptContract();
-        //httpRequests.listWaypointsInSystem();
-        //httpRequests.listShips();
-        httpRequests.getShip("SHEPERD-1");
-        //httpRequests.moveShipToOrbit();
+        RegisterNewAgentResponse newAgent = httpRequests.registerNewAgent("prueba");
+        System.out.println("TOKEN" + " " + newAgent.getToken());
+        String systemSymbol = newAgent.getAgent().getHeadquarters().substring(0, 7);
+        System.out.println("systemSymbol " + systemSymbol);
+
 
 
         /*
