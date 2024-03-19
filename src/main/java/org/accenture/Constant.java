@@ -6,13 +6,14 @@ public class Constant {
 
     public static final String REGISTER_NEW_AGENT = "https://api.spacetraders.io/v2/register";
     public static final String LIST_CONTRACTS = "https://api.spacetraders.io/v2/my/contracts";
-    public static final String ACCEPT_CONTRACT = "https://api.spacetraders.io/v2/my/contracts/cltrik96j09pts60cht8jnjqg/accept";
-    public static final String LIST_WAYPOINTS_IN_SYSTEM = "https://api.spacetraders.io/v2/systems/X1-AF98/waypoints";
+    public static final String ACCEPT_CONTRACT = "https://api.spacetraders.io/v2/my/contracts/{contractId}/accept";
+    public static final String LIST_WAYPOINTS_IN_SYSTEM = "https://api.spacetraders.io/v2/systems/{systemSymbol}/waypoints";
     public static final String LIST_SHIP = "https://api.spacetraders.io/v2/my/ships";
     public static final String GET_SHIP = "https://api.spacetraders.io/v2/my/ships/{shipSymbol}";
     public static final String ORBIT_SHIP = "https://api.spacetraders.io/v2/my/ships/{shipSymbol}/orbit";
+    public static final String GET_CONTRACT = "https://api.spacetraders.io/v2/my/contracts/{contractId}";
 
-    public static final String ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiU0hFUEVSRCIsInZlcnNpb24iOiJ2Mi4yLjAiLCJyZXNldF9kYXRlIjoiMjAyNC0wMy0xMCIsImlhdCI6MTcxMDQzNzg5OCwic3ViIjoiYWdlbnQtdG9rZW4ifQ.fxhJt-AuBZwn_gbMDj8Kuy96MqIP868eOw6fpzFv-Kr2Osj76Ax8vVT2sk3NowrP1V7k3l0Qrdz6P0DJn1tpBtxuiT3CF0GWOJa6SBpUueEEIuRVRpTqJeApvjkshhVlZ-Tmda3sZA45wS4bMq9QOTxmvF9xbUgn8XXiT2Y_qlq9RNh7r7AP8tZ5RbJRc1eW7V7BrJKD1FCGdNi24-JqlFBuSnj03_yP0nxy6CW2qUX_uMj0hiFka41zH7t5IqJREEWNe7Li36yif7L9aWHae7DtSs4F3QX4W3j29C1UppNYFVGO_tS_99Zg6izYrVGx2mXe00Bsjig10NcMrEPGqA";
+    public static final String ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiUFJVRUJBIiwidmVyc2lvbiI6InYyLjIuMCIsInJlc2V0X2RhdGUiOiIyMDI0LTAzLTEwIiwiaWF0IjoxNzEwODc1OTg5LCJzdWIiOiJhZ2VudC10b2tlbiJ9.vECQDOR9em_yAulS2wvM91loP6sVUb9Q_7z8dgkBpU52e65lZSh2p33TsmmUVsRN54b2fb4UearltoWPK5bLlhmRoDISV2O0IOH3giEiY0R6FBS6HW2nbR8BD8GTjsQkFnubl3n8inoBe0vlvKhUdlMQJTkdLrB9FUogBdqiQv1U4fuI0Pn4nIUBQ7fHhtBVOAnOWBWYGO-AObFyoyv1bQ5hTl2mcOoh7Nh9RkdXLD8BXh6DRz_9WJ6H8E8zyzBOe4I6MLGkqa7XDcm9rJ4KYxVcHejWR3ZBANTbxdPxsKqDn9K3V3KNunOIxy5HcBfdog-YtLmvF6S3J6rmEBegaQ";
 
 
 }
