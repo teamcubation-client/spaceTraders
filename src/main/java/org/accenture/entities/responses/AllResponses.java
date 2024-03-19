@@ -7,6 +7,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.Agent;
+import org.accenture.entities.Contract;
+import org.accenture.entities.Nav;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
@@ -31,11 +33,11 @@ public class AllResponses {
             System.out.println(body.getError().getMessage());
         }
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        registerNewAgentResponse.setToken(data.getToken());
         registerNewAgentResponse.setContract(data.getContract());
         registerNewAgentResponse.setAgent(data.getAgent());
-        registerNewAgentResponse.setFaction(data.getFaction());
+        registerNewAgentResponse.setToken(data.getToken());
         registerNewAgentResponse.setShip(data.getShip());
+        registerNewAgentResponse.setFaction(data.getFaction());
 
         return registerNewAgentResponse;
     }
@@ -56,15 +58,41 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
+        Agent data = mapper.convertValue(body.getData(), Agent.class);
 
-        agent.setAccountId(data.getAgent().getAccountId());
-        agent.setHeadquarters(data.getAgent().getHeadquarters());
-        agent.setSymbol(data.getAgent().getSymbol());
-        agent.setCredits(data.getAgent().getCredits());
-        agent.setShipCount(data.getAgent().getShipCount());
-        agent.setStartingFaction(data.getAgent().getStartingFaction());
+        agent.setAccountId(data.getAccountId());
+        agent.setHeadquarters(data.getHeadquarters());
+        agent.setSymbol(data.getSymbol());
+        agent.setCredits(data.getCredits());
+        agent.setShipCount(data.getShipCount());
+        agent.setStartingFaction(data.getStartingFaction());
 
         return agent;
+    }
+
+
+    public static AcceptContractResponse acceptContract(String token) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/contracts/contractId/accept")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+        Contract contract = mapper.convertValue(body.getData(), Contract.class);
+        Agent agent = mapper.convertValue(body.getData(), Agent.class);
+
+        AcceptContractResponse acceptContractResponse = new AcceptContractResponse();
+        acceptContractResponse.setContract(contract);
+        acceptContractResponse.setAgent(agent);
+
+        return acceptContractResponse;
     }
 }

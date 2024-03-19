@@ -3,10 +3,7 @@ package org.accenture.entities.responses;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.accenture.entities.Agent;
-import org.accenture.entities.Contract;
-import org.accenture.entities.Faction;
-import org.accenture.entities.Ship;
+import org.accenture.entities.*;
 
 @Getter
 @Setter

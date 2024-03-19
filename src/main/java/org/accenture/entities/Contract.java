@@ -1,10 +1,14 @@
 package org.accenture.entities;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.ZonedDateTime;
 
 @Getter
+@ToString
+@Setter
 public class Contract {
     private String id;
     private String factionSymbol;
