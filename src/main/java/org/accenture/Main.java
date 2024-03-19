@@ -62,7 +62,7 @@ public class Main {
 
         String token = dataRegisterAgent.getToken();
         String contractID = dataRegisterAgent.getContract().getId();
-        String contractTradeSymbol = dataRegisterAgent.getContract().getId();
+        String contractTradeSymbol = dataRegisterAgent.getContract().getTerms().getDeliver()[0].getTradeSymbol();
         String contractUnitRequested = dataRegisterAgent.getContract().getId();
         String contractDestinationSymbol = dataRegisterAgent.getContract().getId();
         String systemSymbol = dataRegisterAgent.getShip().getNav().getSystemSymbol();
