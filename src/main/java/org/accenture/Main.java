@@ -43,25 +43,30 @@ public class Main {
             return null;
         }
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        System.out.println(data.getToken());
+        //System.out.println(data.getToken());
 
         return data;
     }
 
     private static void printDataRegisterNewAgent(RegisterNewAgentResponse data){
-        System.out.println("token");
+        System.out.print("token:           ");
         System.out.println(data.getToken());
 
         System.out.println("contract");
+        System.out.print("                 Id:                 ");
         System.out.println(data.getContract().getId());
-        System.out.println(data.getContract().getFactionSymbol());
-        System.out.println(data.getContract().getType());
-        System.out.println(data.getContract().getTerms());
+        System.out.print("                 Trade Symbol:       ");
+        System.out.println(data.getContract().getTerms().getDeliver()[0].getTradeSymbol());
+        System.out.print("                 Unit Required:      ");
+        System.out.println(data.getContract().getTerms().getDeliver()[0].getUnitsRequired());
+        System.out.print("                 Destination Symbol: ");
+        System.out.println(data.getContract().getTerms().getDeliver()[0].getDestinationSymbol());
 
-        System.out.println("system symbol");
-        System.out.println(data.getAgent().getSymbol());
+        //data.getAgent().getHeadquarters()): Ubicacion de donde esta, es un string de 3 componentes separados por "-": sector-sytem-ubicacion
+        System.out.print("system symbol:   ");
+        System.out.println(data.getAgent().getHeadquarters().split("-")[1]);
 
-        System.out.println("ship symbol");
+        System.out.print("ship symbol:     ");
         System.out.println(data.getShip().getSymbol());
     }
     private static AcceptContractResponse acceptContract(String token, String contractId) throws JsonProcessingException{
@@ -84,7 +89,7 @@ public class Main {
         return data;
     }
     private static void printDataAcceptContract(AcceptContractResponse data){
-        System.out.print("AcceptContract: ");
+        System.out.print("AcceptContract:  ");
         System.out.println(data.getContract().isAccepted());
     }
 }
