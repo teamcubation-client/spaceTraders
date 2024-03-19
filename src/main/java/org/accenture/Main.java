@@ -11,6 +11,7 @@ import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
+import org.accenture.exceptions.ContractDeclinedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,7 +33,9 @@ public class Main {
         //Accept contract
         AcceptContractResponse dataAcceptContractResponse = getAcceptContractResponse(mapper, agentName, data);
         if (dataAcceptContractResponse == null) return;
-
+        if(!dataAcceptContractResponse.getContract().isAccepted()){
+            throw new ContractDeclinedException();
+        }
 
         String[] headquarter = dataAcceptContractResponse.getAgent().getHeadquarters().split("-");
         var headquarterPart = headquarter[0] + "-" + headquarter[1];
@@ -63,7 +66,6 @@ public class Main {
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer "+ data.getToken())
-                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
                 .routeParam("contractId", data.getContract().getId())
                 .asString();
 
