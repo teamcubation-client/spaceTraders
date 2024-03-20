@@ -7,23 +7,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.accenture.entities.Agent;
 import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
-import org.apache.http.util.Asserts;
-
-import javax.xml.crypto.Data;
-import java.sql.SQLOutput;
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class Main {
 
 
-    public static void main(String[] args) throws JsonProcessingException, InterruptedException {
+    public static void main(String[] args) throws JsonProcessingException {
         com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -73,7 +65,6 @@ public class Main {
         System.out.println("CONTRACT DESTINATION: "+contractDestinationSymbol);
         System.out.println("SYSTEM SYMBOL: "+systemSymbol);
         System.out.println("SHIP SYMBOL: "+shipSymbol+"\n");
-
 
 
         //ACCEPT CONTRACT
