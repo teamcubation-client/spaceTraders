@@ -8,6 +8,8 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.*;
 
+import java.util.List;
+
 public class AllResponses {
 
     public static RegisterNewAgentResponse registerEndpoint() throws JsonProcessingException {
@@ -75,8 +77,6 @@ public class AllResponses {
         return contract.isAccepted();
     }
 
-
-    /*
     public static Trait.Symbol waypointsResponse(String systemSymbol) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -91,12 +91,12 @@ public class AllResponses {
             System.out.println(body.getError().getMessage());
         }
         ListWaypointsResponse waypoints = mapper.convertValue(body.getData(), ListWaypointsResponse.class);
-        Trait trait = new Trait();
-        for(Trait t : waypoints.getTraits()) {
-            if(t.getSymbol().name() == "ASTEROID") {
+        List<Trait> traits = List.of(waypoints.getTraits());
+        for(Trait t : traits) {
+            if(t.getSymbol().toString() == "ASTEROID") {
                 trait = t;
             }
         }
         return trait.getSymbol();
-    }*/
+    }
 }

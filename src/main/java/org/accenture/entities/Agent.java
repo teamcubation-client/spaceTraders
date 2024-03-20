@@ -1,7 +1,6 @@
 package org.accenture.entities;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class Agent {
