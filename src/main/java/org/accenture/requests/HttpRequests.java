@@ -40,7 +40,7 @@ public class HttpRequests {
             System.out.println(body.getError().getMessage());
         }
 
-        log.info("Agent " + body);
+        log.info("Agent " + body.getData());
 
         return objectMapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
 
