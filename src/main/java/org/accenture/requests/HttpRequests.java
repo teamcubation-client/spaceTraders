@@ -8,15 +8,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import lombok.extern.java.Log;
-import lombok.extern.slf4j.Slf4j;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Ship;
+import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.accenture.Constant.*;
 
@@ -27,17 +25,28 @@ public class HttpRequests {
 
     private List<Contract> contracts = new ArrayList<>();
 
-    public void registerNewAgent() {
+    public RegisterNewAgentResponse registerNewAgent(String agentName) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
         HttpResponse<String> response = Unirest.post(REGISTER_NEW_AGENT)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
-                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"SHEPERD\"}")
+                .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
                 .asString();
 
-        System.out.println(response.getBody());
+        ResponseBody body = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        log.info("Agent " + body.getData());
+
+        return objectMapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
+
     }
 
-    public void getContractsList() throws JsonProcessingException {
+    public List<Contract> getContractsList() throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
 
@@ -52,31 +61,62 @@ public class HttpRequests {
         }
 
         for (JsonNode node : data.getData()) {
-            contracts = Stream.of(data).map(contract -> objectMapper.convertValue(node, Contract.class))
-                    .collect(Collectors.toList());
+            Contract contract = objectMapper.convertValue(node, Contract.class);
+            contracts.add(contract);
         }
 
-        System.out.println(contracts);
-
+        log.info("Contract list: " + contracts);
+        return contracts;
     }
 
-    public void acceptContract() {
+    public Contract getContract(String contractId) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.get(GET_CONTRACT)
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .routeParam("contractId", contractId)
+                .asString();
+
+        ResponseBody data = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (data.getError() != null) {
+            System.out.println(data.getError().getMessage());
+        }
+        Contract contract = objectMapper.convertValue(data.getData(), Contract.class);
+
+        log.info("Contract " + contract);
+        return contract;
+    }
+
+    public void acceptContract(String contractId) {
+
         HttpResponse<String> response = Unirest.post(ACCEPT_CONTRACT)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .routeParam("contractId", contractId)
                 .asString();
 
         System.out.println(response.getBody());
     }
 
-    public void listWaypointsInSystem() {
+    public void listWaypointsInSystem(String systemSymbol) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
         HttpResponse<String> response = Unirest.get(LIST_WAYPOINTS_IN_SYSTEM)
                 .header("Accept", "application/json")
+                .routeParam("systemSymbol", systemSymbol)
                 .queryString("type", "ENGINEERED_ASTEROID")
                 .asString();
 
-        System.out.println(response.getBody());
+        ResponseBody responseBody = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (responseBody.getError() != null) {
+            System.out.println(responseBody.getError().getMessage());
+        }
+
+        log.info(responseBody.getData().toString());
     }
 
     public List<Ship> listShips() throws JsonProcessingException {
@@ -125,20 +165,17 @@ public class HttpRequests {
         return ship;
     }
 
-    /*
-    public void moveShipToOrbit() throws JsonProcessingException {
-        Ship ship = getShip();
+    public void moveShipToOrbit(String shipSymbol) {
 
         HttpResponse<String> response = Unirest.post(ORBIT_SHIP)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
-                .routeParam("shipSymbol", ship.getSymbol())
+                .routeParam("shipSymbol", shipSymbol)
                 .asString();
 
         log.info(response.getBody());
 
     }
 
-     */
 }
