@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.accenture.entities.Agent;
 import org.accenture.entities.Contract;
 import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.AllResponses;
@@ -32,7 +31,6 @@ public class Main {
 
         System.out.println(systemSymbol);
         System.out.println("ACCEPT CONTRACT: " + acceptContract(token, contract.getId()));
-
         // System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
 
     }
