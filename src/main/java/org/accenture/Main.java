@@ -31,7 +31,6 @@ public class Main {
 
         System.out.println(systemSymbol);
         System.out.println("ACCEPT CONTRACT: " + acceptContract(token, contract.getId()));
-
         // System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
 
     }
