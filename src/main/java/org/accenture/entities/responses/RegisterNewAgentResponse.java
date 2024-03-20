@@ -6,7 +6,6 @@ import lombok.ToString;
 import org.accenture.entities.*;
 
 @Getter
-@Setter
 @ToString
 public class RegisterNewAgentResponse {
     private String token;
