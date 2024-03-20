@@ -93,7 +93,7 @@ public class Main {
         }
 
         AcceptContractResponse dataAcceptContract = mapper.convertValue(bodyAcceptContract.getData(), AcceptContractResponse.class);
-        if (responseAcceptContract.getStatus() == 200){
+        if (dataAcceptContract.getContract().isAccepted()){
             System.out.println("CONTRACT "+ dataAcceptContract.getContract().getId() +" ACCEPTED.\n");
         }
 
