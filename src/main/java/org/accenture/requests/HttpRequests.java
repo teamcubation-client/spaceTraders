@@ -10,6 +10,7 @@ import kong.unirest.Unirest;
 import lombok.extern.java.Log;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Ship;
+import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
@@ -89,7 +90,9 @@ public class HttpRequests {
         return contract;
     }
 
-    public void acceptContract(String contractId) {
+    public AcceptContractResponse acceptContract(String contractId) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
 
         HttpResponse<String> response = Unirest.post(ACCEPT_CONTRACT)
                 .header("Content-Type", "application/json")
@@ -98,7 +101,12 @@ public class HttpRequests {
                 .routeParam("contractId", contractId)
                 .asString();
 
-        System.out.println(response.getBody());
+        ResponseBody data = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (data.getError() != null) {
+            System.out.println(data.getError().getMessage());
+        }
+
+        return objectMapper.convertValue(data.getData(), AcceptContractResponse.class);
     }
 
     public void listWaypointsInSystem(String systemSymbol) throws JsonProcessingException {
