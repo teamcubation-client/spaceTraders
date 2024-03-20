@@ -11,12 +11,14 @@ import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
 public class Main {
+    private static String systemSymbol;
 
     public static void main(String[] args) throws JsonProcessingException {
         RegisterNewAgentResponse registerNewAgent;
         AcceptContractResponse acceptContract;
 
         registerNewAgent = registerNewAgent();
+        Main.systemSymbol = registerNewAgent.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgent.getAgent().getHeadquarters().split("-")[1];
         printDataRegisterNewAgent(registerNewAgent);
 
         acceptContract = acceptContract(registerNewAgent.getToken(), registerNewAgent.getContract().getId());
@@ -64,7 +66,7 @@ public class Main {
 
         //data.getAgent().getHeadquarters()): Ubicacion de donde esta, es un string de 3 componentes separados por "-": sector-sytem-ubicacion
         System.out.print("system symbol:   ");
-        System.out.println(data.getAgent().getHeadquarters().split("-")[1]);
+        System.out.println(Main.systemSymbol);
 
         System.out.print("ship symbol:     ");
         System.out.println(data.getShip().getSymbol());
