@@ -46,17 +46,20 @@ public class Main {
 
         //ACCEPT A CONTRACT (STEP 2)
 
-        HttpResponse<String> contractResponse = Unirest.post("https://api.spacetraders.io/v2/my/contracts/"+data.getContract()+"/accept")
+        HttpResponse<String> responseAccContract = Unirest.post("https://api.spacetraders.io/v2/my/contracts/"+contractId+"/accept")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
-                .header("Authorization", data.getToken())
+                .header("Authorization", "Bearer "+agentToken)
                 .asString();
 
-        ResponseBody contractBody = mapper.readValue(response.getBody(), ResponseBody.class);
+        ResponseBody bodyAccContract = mapper.readValue(responseAccContract.getBody(), ResponseBody.class);
         if (body.getError() != null) {
-            System.out.println(body.getError().getMessage());
+            System.out.println(bodyAccContract.getError().getMessage());
             return;
         }
-        AcceptContractResponse contractData = mapper.convertValue(contractBody.getData(), AcceptContractResponse.class);
+        AcceptContractResponse dataAccContract = mapper.convertValue(bodyAccContract.getData(), AcceptContractResponse.class);
+        if(dataAccContract.getContract().isAccepted()){
+            System.out.println("The contract ID: "+contractId+" has been accepted successfully.");
+        }
     }
 }
