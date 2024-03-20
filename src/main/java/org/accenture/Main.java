@@ -118,11 +118,11 @@ public class Main {
         System.out.println("//ENGINEERED_ASTEROID(S) FOUND");
         for(JsonNode waypoint : bodyListWaypoints.getData()){
             ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
-            System.out.println("ASTEROID TYPE: "+dataListWaypoints.getType());
-            System.out.println("ASTEROID SYMBOL: "+dataListWaypoints.getSymbol()+"\n");
+            String asteroidType = dataListWaypoints.getType();
+            String asteroidSymbol = dataListWaypoints.getSymbol();
+            System.out.println("ASTEROID TYPE: "+asteroidType);
+            System.out.println("ASTEROID SYMBOL: "+asteroidSymbol+"\n");
         }
-
-        //TO DO STEP 4
 
     }
 
