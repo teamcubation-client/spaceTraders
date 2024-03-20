@@ -44,6 +44,23 @@ public class Main {
         List<ListWaypointsResponse> listOfWayPoints = getListWaypointsResponses(mapper, headquarterPart);
         if (listOfWayPoints == null) return;
 
+        //
+        HttpResponse<String> responsee = Unirest.post("https://api.spacetraders.io/v2\n" +
+                        "/my/ships/{shipSymbol}/navigate")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .body("{\n \"waypointSymbol\": \"" + listOfWayPoints.get(0).getSymbol() + "\"}")
+                .asString();
+
+
+        body = mapper.readValue(responsee.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return ;
+        }
+
     }
 
     private static List<ListWaypointsResponse> getListWaypointsResponses(ObjectMapper mapper, String headquarterPart) throws JsonProcessingException {
