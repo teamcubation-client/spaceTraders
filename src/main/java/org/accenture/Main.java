@@ -40,15 +40,23 @@ public class Main {
         String[] headquarter = dataAcceptContractResponse.getAgent().getHeadquarters().split("-");
         var headquarterPart = headquarter[0] + "-" + headquarter[1];
 
+        //List Waypoints
+        List<ListWaypointsResponse> listOfWayPoints = getListWaypointsResponses(mapper, headquarterPart);
+        if (listOfWayPoints == null) return;
+
+
+    }
+
+    private static List<ListWaypointsResponse> getListWaypointsResponses(ObjectMapper mapper, String headquarterPart) throws JsonProcessingException {
+        ResponseBody body;
         HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/systems/{systemSymbol}/waypoints")
                 .routeParam("systemSymbol", headquarterPart)
                 .queryString("type", "ENGINEERED_ASTEROID")
                 .asString();
-
         body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
-            return;
+            return null;
         }
         JsonNode nodes = body.getData();
         List<ListWaypointsResponse> listOfWayPoints = new ArrayList();
@@ -56,8 +64,8 @@ public class Main {
             ListWaypointsResponse listWaypointsResponse = mapper.convertValue(jnode,ListWaypointsResponse.class);
             listOfWayPoints.add(listWaypointsResponse);
         }
-        System.out.println("Primer Lista de traits - tamaño: "+listOfWayPoints.get(0).getTraits().length);
-
+        System.out.println("Asteroid symbol: "+listOfWayPoints.get(0).getSymbol());
+        return listOfWayPoints;
     }
 
     private static AcceptContractResponse getAcceptContractResponse(ObjectMapper mapper, String agentName, RegisterNewAgentResponse data) throws JsonProcessingException {
