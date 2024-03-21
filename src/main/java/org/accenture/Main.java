@@ -30,6 +30,8 @@ public class Main {
         systemSymbol = registerNewAgentData.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgentData.getAgent().getHeadquarters().split("-")[1];
         shipSymbol = registerNewAgentData.getShip().getSymbol();
         printVarRegisterNewAgent(token, contractId, tradeSymbol, unitRequired, destinationSymbol, systemSymbol, shipSymbol, true);
+
+        acceptContract(token, contractId);
     }
     private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
