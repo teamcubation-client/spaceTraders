@@ -1,16 +1,10 @@
 package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import org.accenture.entities.Contract;
-import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.Nav;
 import org.accenture.entities.responses.AllResponses;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
 
 //import static org.accenture.entities.responses.AllResponses.agentEndpoint;
 import static org.accenture.entities.responses.AllResponses.*;
@@ -30,8 +24,11 @@ public class Main {
         systemSymbol = systemSymbol.substring(0, systemSymbol.lastIndexOf('-'));
 
         System.out.println(systemSymbol);
-        System.out.println("ACCEPT CONTRACT: " + acceptContract(token, contract.getId()));
-        System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
+        System.out.println("ACCEPT CONTRACT: " + acceptEndpoint(token, contract.getId()));
 
+        System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointEndpoint(systemSymbol));
+
+        Nav nav = AllResponses.orbitEndpoint(token, shipSymbol);
+        System.out.println(nav.getWaypointSymbol());
     }
 }
