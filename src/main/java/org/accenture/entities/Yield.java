@@ -9,6 +9,10 @@ public class Yield {
     private Symbol symbol;
     private int units;
 
+    public String getSymbol() {
+        return symbol.name();
+    }
+
     private enum Symbol {
         PRECIOUS_STONES, QUARTZ_SAND, SILICON_CRYSTALS, AMMONIA_ICE, LIQUID_HYDROGEN, LIQUID_NITROGEN, ICE_WATER,
         EXOTIC_MATTER, ADVANCED_CIRCUITRY, GRAVITON_EMITTERS, IRON, IRON_ORE, COPPER, COPPER_ORE, ALUMINUM,
