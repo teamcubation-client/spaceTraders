@@ -7,39 +7,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.accenture.entities.Agent;
 import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
-import org.apache.http.util.Asserts;
-
-import javax.xml.crypto.Data;
-import java.sql.SQLOutput;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class Main {
-
-
-    public static void main(String[] args) throws JsonProcessingException, InterruptedException {
+    public static void main(String[] args) throws JsonProcessingException {
         com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
-        System.out.print("//INITIALIZING SYSTEM");
-        sleep();
+        System.out.println("//INITIALIZING SYSTEM");
         System.out.println("//SYSTEM INITIALIZED");
-        Thread.sleep(500);
         System.out.println("'STARFIELD AT HOME'\n");
-        Thread.sleep(500);
 
         String agentUserName = "TQ" + (int) (Math.random() * 1000000);
 
         //REGISTER NEW AGENT
-        System.out.print("//INITIALIZING REGISTRATION");
-        sleep();
+        System.out.println("//INITIALIZING REGISTRATION");
         HttpResponse<String> responseRegisterAgent = Unirest.post("https://api.spacetraders.io/v2/register")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -53,29 +40,36 @@ public class Main {
             return;
         }
         System.out.println("//REGISTRATION SUCCESSFUL");
-        Thread.sleep(500);
         RegisterNewAgentResponse dataRegisterAgent = mapper.convertValue(bodyRegisterAgent.getData(), RegisterNewAgentResponse.class);
-        System.out.println("AGENT: "+dataRegisterAgent.getAgent().getAccountId());
-        System.out.println("HEADQUARTERS: "+dataRegisterAgent.getAgent().getHeadquarters());
-        System.out.println("FACTION: "+dataRegisterAgent.getFaction().getName()+"\n");
-        Thread.sleep(500);
 
+        String agentID = dataRegisterAgent.getAgent().getAccountId();
+        String faction = dataRegisterAgent.getFaction().getName();
         String token = dataRegisterAgent.getToken();
         String contractID = dataRegisterAgent.getContract().getId();
-        String contractTradeSymbol = dataRegisterAgent.getContract().getId();
-        String contractUnitRequested = dataRegisterAgent.getContract().getId();
-        String contractDestinationSymbol = dataRegisterAgent.getContract().getId();
-        String systemSymbol = dataRegisterAgent.getShip().getNav().getSystemSymbol();
+        String contractTradeSymbol = dataRegisterAgent.getContract().getTerms().getDeliver()[0].getTradeSymbol();
+        int contractUnitsRequested = dataRegisterAgent.getContract().getTerms().getDeliver()[0].getUnitsRequired();
+        String contractDestinationSymbol = dataRegisterAgent.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
+        String headquarters = dataRegisterAgent.getAgent().getHeadquarters();
+        String[] arrOfStr = headquarters.split("-");
+        String systemSymbol = arrOfStr[0]+"-"+arrOfStr[1];
+        //String systemSymbol = dataRegisterAgent.getShip().getNav().getSystemSymbol();
         String shipSymbol = dataRegisterAgent.getShip().getSymbol();
+
+        System.out.println("AGENT: "+agentID);
+        System.out.println("HEADQUARTERS: "+headquarters);
+        System.out.println("FACTION: "+faction);
+        System.out.println("CONTRACT: "+contractID+"\n");
+        System.out.println("MATERIAL REQUESTED: "+contractTradeSymbol);
+        System.out.println("UNITS REQUESTED: "+contractUnitsRequested);
+        System.out.println("CONTRACT DESTINATION: "+contractDestinationSymbol);
+        System.out.println("SYSTEM SYMBOL: "+systemSymbol);
+        System.out.println("SHIP SYMBOL: "+shipSymbol+"\n");
 
 
         //ACCEPT CONTRACT
-        System.out.print("//LOOKING FOR CONTRACT");
-        sleep();
-        System.out.println("//CONTRACT FOUND");
-        Thread.sleep(500);
-        System.out.print("//ACCEPTING CONTRACT");
-        sleep();
+        System.out.println("//VERIFYING CONTRACT");
+        System.out.println("//VERIFICATION COMPLETED");
+        System.out.println("//ACCEPTING CONTRACT");
         HttpResponse<String> responseAcceptContract = Unirest.post("https://api.spacetraders.io/v2/my/contracts/" + contractID + "/accept")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -89,7 +83,7 @@ public class Main {
         }
 
         AcceptContractResponse dataAcceptContract = mapper.convertValue(bodyAcceptContract.getData(), AcceptContractResponse.class);
-        if (responseAcceptContract.getStatus() == 200){
+        if (dataAcceptContract.getContract().isAccepted()){
             System.out.println("CONTRACT "+ dataAcceptContract.getContract().getId() +" ACCEPTED.\n");
         }
 
@@ -108,45 +102,19 @@ public class Main {
             return;
         }
 
-        System.out.print("//LOOKING FOR WAYPOINTS.");
-        sleep();
+        System.out.println("//LOOKING FOR WAYPOINTS");
         System.out.println("//WAYPOINTS FOUND");
-        Thread.sleep(500);
-        System.out.print("//FILTERING WAYPOINTS BY 'ENGINEERED_ASTEROID'.");
-        sleep();
+        System.out.println("//FILTERING WAYPOINTS BY 'ENGINEERED_ASTEROID'");
         System.out.println("//ENGINEERED_ASTEROID(S) FOUND");
-        Thread.sleep(500);
         for(JsonNode waypoint : bodyListWaypoints.getData()){
             ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
-            System.out.println("ASTEROID TYPE: "+dataListWaypoints.getType());
-            System.out.println("ASTEROID SYMBOL: "+dataListWaypoints.getSymbol()+"\n");
+            String asteroidType = dataListWaypoints.getType();
+            String asteroidSymbol = dataListWaypoints.getSymbol();
+            System.out.println("ASTEROID TYPE: "+asteroidType);
+            System.out.println("ASTEROID SYMBOL: "+asteroidSymbol+"\n");
         }
 
         //TO DO STEP 4
 
-    }
-
-    public static void sleep() throws InterruptedException {
-        Thread.sleep(200);
-        System.out.print(".");
-        Thread.sleep(200);
-        System.out.print(".");
-        Thread.sleep(200);
-        System.out.println(".");
-        Thread.sleep(500);
-        System.out.print(".");
-        Thread.sleep(200);
-        System.out.print(".");
-        Thread.sleep(200);
-        System.out.print(".\r");
-        Thread.sleep(200);
-        System.out.print(" ");
-        Thread.sleep(500);
-        System.out.print("\r.");
-        Thread.sleep(200);
-        System.out.print(".");
-        Thread.sleep(200);
-        System.out.println(".\r");
-        Thread.sleep(500);
     }
 }
