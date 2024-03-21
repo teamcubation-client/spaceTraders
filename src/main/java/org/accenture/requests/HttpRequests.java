@@ -11,6 +11,7 @@ import lombok.extern.java.Log;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Ship;
 import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
@@ -109,7 +110,7 @@ public class HttpRequests {
         return objectMapper.convertValue(data.getData(), AcceptContractResponse.class);
     }
 
-    public void listWaypointsInSystem(String systemSymbol) throws JsonProcessingException {
+    public List<ListWaypointsResponse> listWaypointsInSystem(String systemSymbol) throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
 
@@ -124,7 +125,14 @@ public class HttpRequests {
             System.out.println(responseBody.getError().getMessage());
         }
 
-        log.info(responseBody.getData().toString());
+        List<ListWaypointsResponse> responses = new ArrayList<>();
+
+        for (JsonNode node : responseBody.getData()) {
+            ListWaypointsResponse waypointsResponse = objectMapper.convertValue(node, ListWaypointsResponse.class);
+            responses.add(waypointsResponse);
+        }
+
+        return responses;
     }
 
     public List<Ship> listShips() throws JsonProcessingException {
