@@ -15,15 +15,8 @@ public class Main {
     public static void main(String[] args) throws JsonProcessingException {
 
         registerNewAgent();
-
-        /*
-        AcceptContractResponse acceptContract;
-        acceptContract = acceptContract(registerNewAgent.getToken(), registerNewAgent.getContract().getId());
-        printDataAcceptContract(acceptContract);
-
-         */
+        acceptContract(spaceTradersVar.token, spaceTradersVar.contractId);
     }
-
 
     private static boolean registerNewAgent() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
@@ -83,7 +76,7 @@ public class Main {
             System.out.println(spaceTradersVar.shipSymbol);
         }
     }
-    private static AcceptContractResponse acceptContract(String token, String contractId) throws JsonProcessingException{
+    private static boolean acceptContract(String token, String contractId) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -97,13 +90,12 @@ public class Main {
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
-            return null;
+            return false;
         }
         AcceptContractResponse data = mapper.convertValue(body.getData(), AcceptContractResponse.class);
-        return data;
-    }
-    private static void printDataAcceptContract(AcceptContractResponse data){
+
         System.out.print("AcceptContract:  ");
         System.out.println(data.getContract().isAccepted());
+        return true;
     }
 }
