@@ -3,8 +3,11 @@ package org.accenture;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.accenture.entities.Deliver;
 import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.requests.HttpRequests;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
@@ -21,6 +24,7 @@ public class Main {
         String destinationSymbol = "";
         String shipSymbol = newAgent.getShip().getSymbol();
         Boolean isContractAccepted = false;
+        String waypointSymbol = "";
 
         Deliver deliver[] = newAgent.getContract().getTerms().getDeliver();
         for (Deliver deliver1 : deliver) {
@@ -38,8 +42,22 @@ public class Main {
         System.out.println("shipSymbols " + shipSymbol);
 
         System.out.println("Accept contract");
-        AcceptContractResponse acceptContractResponse = httpRequests.acceptContract(contractId);
-        isContractAccepted = acceptContractResponse.getContract().isAccepted();
-        System.out.println("Contract accepted: " + isContractAccepted);
+        if (newAgent.getContract().isAccepted()) {
+            throw new RuntimeException("Contract with id " + contractId + " was already accepted");
+        } else {
+            AcceptContractResponse acceptContractResponse = httpRequests.acceptContract(contractId);
+            isContractAccepted = acceptContractResponse.getContract().isAccepted();
+            System.out.println("Contract accepted: " + isContractAccepted);
+        }
+
+        if (isContractAccepted.equals(true)) {
+            System.out.println("List waypoints in System");
+            List<ListWaypointsResponse> waypointsResponses = httpRequests.listWaypointsInSystem(systemSymbol);
+            waypointSymbol = waypointsResponses.get(0).getSymbol();
+            System.out.println("Asteroid waypointSymbol " + waypointSymbol);
+        } else {
+            throw new RuntimeException("You must accept the contract before moving forward");
+        }
+
     }
 }
