@@ -22,33 +22,16 @@ public class Main {
         String shipSymbol;
 
         RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
-        token               = registerNewAgentData.getToken();
-        contractId          = registerNewAgentData.getContract().getId();
-        tradeSymbol         = registerNewAgentData.getContract().getTerms().getDeliver()[0].getTradeSymbol();
-        unitRequired        = registerNewAgentData.getContract().getTerms().getDeliver()[0].getUnitsRequired();
-        destinationSymbol   = registerNewAgentData.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
-        systemSymbol        = registerNewAgentData.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgentData.getAgent().getHeadquarters().split("-")[1];
-        shipSymbol          = registerNewAgentData.getShip().getSymbol();
-        printVarRegisterNewAgent(token, contractId, tradeSymbol,unitRequired, destinationSymbol, systemSymbol,shipSymbol,true);
-
-<<<<<<< HEAD
-        registerNewAgent();
-        acceptContract(spaceTradersVar.token, spaceTradersVar.contractId);
+        token = registerNewAgentData.getToken();
+        contractId = registerNewAgentData.getContract().getId();
+        tradeSymbol = registerNewAgentData.getContract().getTerms().getDeliver()[0].getTradeSymbol();
+        unitRequired = registerNewAgentData.getContract().getTerms().getDeliver()[0].getUnitsRequired();
+        destinationSymbol = registerNewAgentData.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
+        systemSymbol = registerNewAgentData.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgentData.getAgent().getHeadquarters().split("-")[1];
+        shipSymbol = registerNewAgentData.getShip().getSymbol();
+        printVarRegisterNewAgent(token, contractId, tradeSymbol, unitRequired, destinationSymbol, systemSymbol, shipSymbol, true);
     }
-
-    private static boolean registerNewAgent() throws JsonProcessingException{
-=======
-
-        /*
-        AcceptContractResponse acceptContract;
-        acceptContract = acceptContract(registerNewAgent.getToken(), registerNewAgent.getContract().getId());
-        printDataAcceptContract(acceptContract);
-
-         */
-    }
-
     private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
->>>>>>> register-new-agent-acc-30
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
