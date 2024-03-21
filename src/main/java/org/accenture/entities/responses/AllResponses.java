@@ -2,6 +2,7 @@ package org.accenture.entities.responses;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
@@ -9,6 +10,7 @@ import kong.unirest.Unirest;
 import org.accenture.entities.*;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AllResponses {
 
@@ -77,12 +79,14 @@ public class AllResponses {
         return contract.isAccepted();
     }
 
-    public static Trait.Symbol waypointsResponse(String systemSymbol) throws JsonProcessingException {
+
+
+    public static String waypointsResponse(String systemSymbol) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
-        HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/systems/" + systemSymbol + "waypoints?type=ENGINEERED_ASTEROID")
+        HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/systems/" + systemSymbol + "/waypoints?type=ENGINEERED_ASTEROID")
                 .header("Accept", "application/json")
                 .asString();
 
@@ -90,13 +94,16 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        ListWaypointsResponse waypoints = mapper.convertValue(body.getData(), ListWaypointsResponse.class);
-        List<Trait> traits = List.of(waypoints.getTraits());
-        for(Trait t : traits) {
-            if(t.getSymbol().toString() == "ASTEROID") {
-                trait = t;
+        StringBuilder asteroidSymbol = new StringBuilder();
+        for (JsonNode jn : body.getData()) {
+            ListWaypointsResponse waypoints = mapper.convertValue(jn, ListWaypointsResponse.class);
+            for(Trait t : waypoints.getTraits()) {
+                //if(Objects.equals(t.getSymbol(), "ASTEROID")) {
+                    asteroidSymbol.append(t.getSymbol() + " ");
+                //}
             }
         }
-        return trait.getSymbol();
+        return asteroidSymbol.toString();
     }
 }
+

@@ -8,6 +8,10 @@ public class Trait {
     private String name;
     private String description;
 
+    public String getSymbol() {
+        return symbol.name();
+    }
+
     private enum Symbol {
         BUREAUCRATIC, SECRETIVE, CAPITALISTIC, INDUSTRIOUS, PEACEFUL, DISTRUSTFUL, WELCOMING, SMUGGLERS, SCAVENGERS,
         REBELLIOUS, EXILES, PIRATES, RAIDERS, CLAN, GUILD, DOMINION, FRINGE, FORSAKEN, ISOLATED, LOCALIZED, ESTABLISHED,
