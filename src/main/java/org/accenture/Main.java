@@ -13,8 +13,24 @@ import org.accenture.entities.responses.ResponseBody;
 public class Main {
 
     public static void main(String[] args) throws JsonProcessingException {
+        String token;
+        String contractId;
+        String tradeSymbol;
+        int unitRequired;
+        String destinationSymbol;
+        String systemSymbol;
+        String shipSymbol;
 
-        registerNewAgent();
+        RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
+        token               = registerNewAgentData.getToken();
+        contractId          = registerNewAgentData.getContract().getId();
+        tradeSymbol         = registerNewAgentData.getContract().getTerms().getDeliver()[0].getTradeSymbol();
+        unitRequired        = registerNewAgentData.getContract().getTerms().getDeliver()[0].getUnitsRequired();
+        destinationSymbol   = registerNewAgentData.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
+        systemSymbol        = registerNewAgentData.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgentData.getAgent().getHeadquarters().split("-")[1];
+        shipSymbol          = registerNewAgentData.getShip().getSymbol();
+        printVarRegisterNewAgent(token, contractId, tradeSymbol,unitRequired, destinationSymbol, systemSymbol,shipSymbol,true);
+
 
         /*
         AcceptContractResponse acceptContract;
@@ -24,8 +40,7 @@ public class Main {
          */
     }
 
-
-    private static boolean registerNewAgent() throws JsonProcessingException{
+    private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -41,46 +56,40 @@ public class Main {
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
-            return false;
+            return null;
         }
 
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
-        loadVarRegisterNewAgent(data);
-        printVarRegisterNewAgent(data, true);
-
-        return true;
+        return data;
     }
-
-    private static void loadVarRegisterNewAgent(RegisterNewAgentResponse data){
-        spaceTradersVar.token               = data.getToken();
-        spaceTradersVar.contractId          = data.getContract().getId();
-        spaceTradersVar.tradeSymbol         = data.getContract().getTerms().getDeliver()[0].getTradeSymbol();
-        spaceTradersVar.unitRequired        = data.getContract().getTerms().getDeliver()[0].getUnitsRequired();
-        spaceTradersVar.destinationSymbol   = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
-        spaceTradersVar.systemSymbol        = data.getAgent().getHeadquarters().split("-")[0] + "-" + data.getAgent().getHeadquarters().split("-")[1];
-        spaceTradersVar.shipSymbol          = data.getShip().getSymbol();
-    }
-    private static void printVarRegisterNewAgent(RegisterNewAgentResponse data, boolean enable){
+    private static void printVarRegisterNewAgent(   String tokenData,
+                                                    String contractIdData,
+                                                    String tradeSymbolData,
+                                                    int unitRequiredData,
+                                                    String destinationSymbolData,
+                                                    String systemSymbolData,
+                                                    String shipSymbolData,
+                                                    boolean enable){
         if(enable) {
             System.out.print("token:           ");
-            System.out.println(spaceTradersVar.token);
+            System.out.println(tokenData);
 
             System.out.println("contract");
             System.out.print("                 Id:                 ");
-            System.out.println(spaceTradersVar.contractId);
+            System.out.println(contractIdData);
             System.out.print("                 Trade Symbol:       ");
-            System.out.println(spaceTradersVar.tradeSymbol);
+            System.out.println(tradeSymbolData);
             System.out.print("                 Unit Required:      ");
-            System.out.println(spaceTradersVar.unitRequired);
+            System.out.println(unitRequiredData);
             System.out.print("                 Destination Symbol: ");
-            System.out.println(spaceTradersVar.destinationSymbol);
+            System.out.println(destinationSymbolData);
 
             //data.getAgent().getHeadquarters()): Ubicacion de donde esta, es un string de 3 componentes separados por "-": sector-sytem-ubicacion
             System.out.print("system symbol:   ");
-            System.out.println(spaceTradersVar.systemSymbol);
+            System.out.println(systemSymbolData);
 
             System.out.print("ship symbol:     ");
-            System.out.println(spaceTradersVar.shipSymbol);
+            System.out.println(shipSymbolData);
         }
     }
     private static AcceptContractResponse acceptContract(String token, String contractId) throws JsonProcessingException{
