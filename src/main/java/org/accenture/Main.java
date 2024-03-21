@@ -19,10 +19,10 @@ public class Main {
 
         String agentName = "Cami" + (int) (Math.random() * 1000000);
 
-        String apiSpaceTraders = "https://api.spacetraders.io/v2";
+        Unirest.config().defaultBaseUrl("https://api.spacetraders.io/v2");
 
 //registerNewAgent
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
+        HttpResponse<String> response = Unirest.post("/register")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
@@ -60,7 +60,7 @@ public class Main {
 
 
         //acceptContract
-        HttpResponse<String> acceptContract = Unirest.post( apiSpaceTraders + "/my/contracts/{contractId}/accept")
+        HttpResponse<String> acceptContract = Unirest.post( "/my/contracts/{contractId}/accept")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .header("Authorization", token)
@@ -79,7 +79,12 @@ public class Main {
         }
 //
 
-//
+//        HttpResponse<String> listWaypointsInSystem = Unirest.get("/systems/systemSymbol/waypoints")
+//                .header("Accept", "application/json")
+//                .routeParam("systemSymbol", systemSymbol)
+//                .asString();
+
+
 //
 //            }
 //
