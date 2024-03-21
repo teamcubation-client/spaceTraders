@@ -7,17 +7,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.ListWaypointsResponse;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 import org.accenture.exceptions.ContractDeclinedException;
+import org.accenture.exceptions.OrbitShipException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -40,11 +39,55 @@ public class Main {
         String[] headquarter = dataAcceptContractResponse.getAgent().getHeadquarters().split("-");
         var headquarterPart = headquarter[0] + "-" + headquarter[1];
 
-        //List Waypoints
+        //Get ListWayPoints
         List<ListWaypointsResponse> listOfWayPoints = getListWaypointsResponses(mapper, headquarterPart);
         if (listOfWayPoints == null) return;
 
+        //Orbit ship & Navigate Ship
+        validateOrbitShip(mapper, data);
+        NavigateShipResponse navigateShipResponse = navigateShip(mapper, data, listOfWayPoints);
 
+
+    }
+
+    private static NavigateShipResponse navigateShip(ObjectMapper mapper, RegisterNewAgentResponse data, List<ListWaypointsResponse> listOfWayPoints) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> responsee = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/navigate")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .body("{\n \"waypointSymbol\": \"" + listOfWayPoints.get(0).getSymbol() + "\"}")
+                .asString();
+
+
+        body = mapper.readValue(responsee.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return null;
+        }
+        NavigateShipResponse navigateShipResponse = mapper.convertValue(body.getData(), NavigateShipResponse.class);
+        System.out.println("-- NAVIGATE SHIP --");
+        System.out.println("Consumed Fuel: " + navigateShipResponse.getFuel().getConsumed().getAmount());
+        System.out.println("Arrival Time: " + navigateShipResponse.getNav().getRoute().getArrival());
+        return navigateShipResponse;
+    }
+
+    private static void validateOrbitShip(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> responseOrbitShip = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/orbit")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .asString();
+        body = mapper.readValue(responseOrbitShip.getBody(), ResponseBody.class);
+        if (mapper.readValue(responseOrbitShip.getBody(), ResponseBody.class).getError() != null) {
+            System.out.println(body.getError().getMessage());
+            throw new OrbitShipException();
+        }
     }
 
     private static List<ListWaypointsResponse> getListWaypointsResponses(ObjectMapper mapper, String headquarterPart) throws JsonProcessingException {
@@ -53,6 +96,7 @@ public class Main {
                 .routeParam("systemSymbol", headquarterPart)
                 .queryString("type", "ENGINEERED_ASTEROID")
                 .asString();
+
         body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
