@@ -40,9 +40,6 @@ public class Main {
         System.out.println("Accept contract");
         AcceptContractResponse acceptContractResponse = httpRequests.acceptContract(contractId);
         isContractAccepted = acceptContractResponse.getContract().isAccepted();
-
-        if (isContractAccepted.equals(true)) {
-            
-        }
+        System.out.println("Contract accepted: " + isContractAccepted);
     }
 }
