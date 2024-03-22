@@ -22,24 +22,17 @@ public class Main {
         String shipSymbol;
 
         RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
-        token               = registerNewAgentData.getToken();
-        contractId          = registerNewAgentData.getContract().getId();
-        tradeSymbol         = registerNewAgentData.getContract().getTerms().getDeliver()[0].getTradeSymbol();
-        unitRequired        = registerNewAgentData.getContract().getTerms().getDeliver()[0].getUnitsRequired();
-        destinationSymbol   = registerNewAgentData.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
-        systemSymbol        = registerNewAgentData.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgentData.getAgent().getHeadquarters().split("-")[1];
-        shipSymbol          = registerNewAgentData.getShip().getSymbol();
-        printVarRegisterNewAgent(token, contractId, tradeSymbol,unitRequired, destinationSymbol, systemSymbol,shipSymbol,true);
+        token = registerNewAgentData.getToken();
+        contractId = registerNewAgentData.getContract().getId();
+        tradeSymbol = registerNewAgentData.getContract().getTerms().getDeliver()[0].getTradeSymbol();
+        unitRequired = registerNewAgentData.getContract().getTerms().getDeliver()[0].getUnitsRequired();
+        destinationSymbol = registerNewAgentData.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
+        systemSymbol = registerNewAgentData.getAgent().getHeadquarters().split("-")[0] + "-" + registerNewAgentData.getAgent().getHeadquarters().split("-")[1];
+        shipSymbol = registerNewAgentData.getShip().getSymbol();
+        printVarRegisterNewAgent(token, contractId, tradeSymbol, unitRequired, destinationSymbol, systemSymbol, shipSymbol, true);
 
-
-        /*
-        AcceptContractResponse acceptContract;
-        acceptContract = acceptContract(registerNewAgent.getToken(), registerNewAgent.getContract().getId());
-        printDataAcceptContract(acceptContract);
-
-         */
+        acceptContract(token, contractId);
     }
-
     private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -92,7 +85,7 @@ public class Main {
             System.out.println(shipSymbolData);
         }
     }
-    private static AcceptContractResponse acceptContract(String token, String contractId) throws JsonProcessingException{
+    private static boolean acceptContract(String token, String contractId) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -106,13 +99,12 @@ public class Main {
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
-            return null;
+            return false;
         }
         AcceptContractResponse data = mapper.convertValue(body.getData(), AcceptContractResponse.class);
-        return data;
-    }
-    private static void printDataAcceptContract(AcceptContractResponse data){
+
         System.out.print("AcceptContract:  ");
         System.out.println(data.getContract().isAccepted());
+        return true;
     }
 }
