@@ -54,9 +54,31 @@ public class Main {
 
         Thread.sleep(Math.abs(duration.toMillis()) + 1000L); // 1000L interval duration
 
+        //dockShip
         dockShip(mapper, data);
 
+        //Refuel Ship
+        refuelShip(mapper, data, navigateShipResponse);
 
+    }
+
+    private static void refuelShip(ObjectMapper mapper, RegisterNewAgentResponse data, NavigateShipResponse navigateShipResponse) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> responseRefuelShip = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/refuel")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                //.body("{\n \"units\": \"" + navigateShipResponse.getFuel().getConsumed().getAmount() + "\"}")
+                .asString();
+        body = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+        RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+        System.out.println("-- REFUEL SHIP --");
+        System.out.println("TotalPrice: "+ refuelShipResponse.getTransaction().getTotalPrice());
     }
 
     private static void dockShip(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
