@@ -39,12 +39,11 @@ public class Main {
         shipSymbol = registerNewAgentData.getShip().getSymbol();
         printVarRegisterNewAgent(token, contractId, tradeSymbol, unitRequired, destinationSymbol, systemSymbol, shipSymbol, true);
 
-        acceptContract(token, contractId);
-
-        List<ListWaypointsResponse> listWaypointsInSystemData = listWaypointsInSystem(systemSymbol);
-        asteroidSymbol = listWaypointsInSystemData.get(0).getSymbol();
-        printDataListWaypoints(asteroidSymbol);
-
+        if(acceptContract(token, contractId)){
+            List<ListWaypointsResponse> listWaypointsInSystemData = listWaypointsInSystem(systemSymbol);
+            asteroidSymbol = listWaypointsInSystemData.get(0).getSymbol();
+            printDataListWaypoints(asteroidSymbol);
+        }
     }
     private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
@@ -118,7 +117,7 @@ public class Main {
 
         System.out.print("AcceptContract:  ");
         System.out.println(data.getContract().isAccepted());
-        return true;
+        return data.getContract().isAccepted();
     }
 
     private static List<ListWaypointsResponse> listWaypointsInSystem(String systemSymbol) throws JsonProcessingException{
