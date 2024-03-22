@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.accenture.entities.Deliver;
 import org.accenture.entities.responses.AcceptContractResponse;
 import org.accenture.entities.responses.ListWaypointsResponse;
+import org.accenture.entities.responses.NavigateShipResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.requests.HttpRequests;
 
@@ -23,8 +24,9 @@ public class Main {
         int unitsRequired = 0;
         String destinationSymbol = "";
         String shipSymbol = newAgent.getShip().getSymbol();
-        Boolean isContractAccepted = false;
+        Boolean isContractAccepted;
         String waypointSymbol = "";
+        String shipStatus = "";
 
         Deliver deliver[] = newAgent.getContract().getTerms().getDeliver();
         for (Deliver deliver1 : deliver) {
@@ -50,14 +52,29 @@ public class Main {
             System.out.println("Contract accepted: " + isContractAccepted);
         }
 
+
+
         if (isContractAccepted.equals(true)) {
             System.out.println("List waypoints in System");
             List<ListWaypointsResponse> waypointsResponses = httpRequests.listWaypointsInSystem(systemSymbol);
             waypointSymbol = waypointsResponses.get(0).getSymbol();
             System.out.println("Asteroid waypointSymbol " + waypointSymbol);
+
+            System.out.println("Navigate ship to orbit");
+            NavigateShipResponse navigateShipResponse = httpRequests.moveShipToOrbit(shipSymbol);
+            shipStatus = String.valueOf(navigateShipResponse.getNav().getStatus());
+            System.out.println(shipStatus);
+
+            System.out.println("Navigate ship to a waypoint");
+            NavigateShipResponse navigateResponse = httpRequests.navigateShip(shipSymbol, waypointSymbol);
+
+
+
         } else {
             throw new RuntimeException("You must accept the contract before moving forward");
         }
+
+
 
     }
 }

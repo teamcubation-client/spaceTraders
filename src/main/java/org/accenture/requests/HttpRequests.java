@@ -10,10 +10,7 @@ import kong.unirest.Unirest;
 import lombok.extern.java.Log;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Ship;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.ListWaypointsResponse;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,9 +158,6 @@ public class HttpRequests {
 
     public Ship getShip(String shipSymbol) throws JsonProcessingException {
 
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new JavaTimeModule());
-
         HttpResponse<String> response = Unirest.get(GET_SHIP)
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
@@ -181,7 +175,9 @@ public class HttpRequests {
         return ship;
     }
 
-    public void moveShipToOrbit(String shipSymbol) {
+    public NavigateShipResponse moveShipToOrbit(String shipSymbol) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
 
         HttpResponse<String> response = Unirest.post(ORBIT_SHIP)
                 .header("Content-Type", "application/json")
@@ -190,8 +186,51 @@ public class HttpRequests {
                 .routeParam("shipSymbol", shipSymbol)
                 .asString();
 
-        log.info(response.getBody());
+        ResponseBody body = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        return objectMapper.convertValue(body.getData(), NavigateShipResponse.class);
 
     }
 
+    public NavigateShipResponse navigateShip(String shipSymbol, String waypointSymbol) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
+        NavigateShipResponse navigateShipResponse = null;
+        Ship ship = getShip(shipSymbol);
+        int currentFuel = ship.getFuel().getCurrent();
+        int consumedFuel = ship.getFuel().getConsumed().getAmount();
+        double remainingFuel = 0.0;
+
+        if (currentFuel > consumedFuel) {
+            HttpResponse<String> response = Unirest.post(NAVIGATE_SHIP)
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                    .routeParam("shipSymbol", shipSymbol)
+                    .body("{\n  \"" + waypointSymbol + "\": \"string\"\n}")
+                    .asString();
+
+            ResponseBody body = objectMapper.readValue(response.getBody(), ResponseBody.class);
+            if (body.getError() != null) {
+                System.out.println(body.getError().getMessage());
+            }
+
+            navigateShipResponse = objectMapper.convertValue(body.getData(), NavigateShipResponse.class);
+            remainingFuel = calculateFuel(currentFuel, consumedFuel);
+
+        } else {
+            throw new RuntimeException("Not enough fuel to navigate");
+        }
+        log.info("Navigate ship response: " + navigateShipResponse);
+        log.info("Remaining fuel: " + remainingFuel);
+        return navigateShipResponse;
+    }
+
+    private double calculateFuel(int currentFuel, int consumedFuel) {
+        return currentFuel - consumedFuel;
+    }
 }
