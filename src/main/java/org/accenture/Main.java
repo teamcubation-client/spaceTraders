@@ -2,13 +2,20 @@ package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.accenture.entities.Point;
 import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
 
@@ -20,6 +27,7 @@ public class Main {
         String destinationSymbol;
         String systemSymbol;
         String shipSymbol;
+        String asteroidSymbol;
 
         RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
         token = registerNewAgentData.getToken();
@@ -31,7 +39,11 @@ public class Main {
         shipSymbol = registerNewAgentData.getShip().getSymbol();
         printVarRegisterNewAgent(token, contractId, tradeSymbol, unitRequired, destinationSymbol, systemSymbol, shipSymbol, true);
 
-        acceptContract(token, contractId);
+        if(acceptContract(token, contractId)){
+            List<ListWaypointsResponse> listWaypointsInSystemData = listWaypointsInSystem(systemSymbol);
+            asteroidSymbol = listWaypointsInSystemData.get(0).getSymbol();
+            printDataListWaypoints(asteroidSymbol);
+        }
     }
     private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
@@ -105,6 +117,34 @@ public class Main {
 
         System.out.print("AcceptContract:  ");
         System.out.println(data.getContract().isAccepted());
-        return true;
+        return data.getContract().isAccepted();
     }
+
+    private static List<ListWaypointsResponse> listWaypointsInSystem(String systemSymbol) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/systems/" + systemSymbol + "/waypoints?type=ENGINEERED_ASTEROID")
+                .header("Accept", "application/json")
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return null;
+        }
+        List<ListWaypointsResponse> data = new ArrayList<ListWaypointsResponse>();
+        for(JsonNode waypoint: body.getData() ){
+            data.add(mapper.convertValue(waypoint, ListWaypointsResponse.class));
+        }
+
+        return data;
+    }
+
+    private static void printDataListWaypoints(String asteroidSymbolData){
+        System.out.print("Asteroid Symbol: ");
+        System.out.println(asteroidSymbolData);
+    }
+
 }
