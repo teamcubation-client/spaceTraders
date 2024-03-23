@@ -2,6 +2,7 @@ package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
@@ -9,6 +10,7 @@ import kong.unirest.Unirest;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Terms;
 import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
 
@@ -19,7 +21,7 @@ public class Main {
         mapper.registerModule(new JavaTimeModule());
 
         //REGISTER NEW AGENT (STEP 1)
-
+        System.out.println("RUNNING REGISTRATION PROCESS...");
         String agentName = "TQ" + (int) (Math.random() * 1000000);
 
         HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
@@ -33,7 +35,7 @@ public class Main {
             System.out.println(body.getError().getMessage());
             return;
         }
-        System.out.println("The user has been successfully registered under name: "+agentName);
+        System.out.println("The user has been successfully registered under name: "+agentName+"\n");
         RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
 
         String agentToken = data.getToken();
@@ -45,7 +47,7 @@ public class Main {
         String shipSymbol = data.getShip().getSymbol();
 
         //ACCEPT A CONTRACT (STEP 2)
-
+        System.out.println("ACCEPTING CONTRACT...");
         HttpResponse<String> responseAccContract = Unirest.post("https://api.spacetraders.io/v2/my/contracts/"+contractId+"/accept")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -53,13 +55,30 @@ public class Main {
                 .asString();
 
         ResponseBody bodyAccContract = mapper.readValue(responseAccContract.getBody(), ResponseBody.class);
-        if (body.getError() != null) {
+        if (bodyAccContract.getError() != null) {
             System.out.println(bodyAccContract.getError().getMessage());
             return;
         }
         AcceptContractResponse dataAccContract = mapper.convertValue(bodyAccContract.getData(), AcceptContractResponse.class);
         if(dataAccContract.getContract().isAccepted()){
-            System.out.println("The contract ID: "+contractId+" has been accepted successfully.");
+            System.out.println("The contract ID: "+contractId+" has been accepted successfully.\n");
+        }
+
+        //LIST WAYPOINTS IN SYSTEM
+        System.out.println("LISTING ENGINEERED ASTEROID WAYPOINTS...");
+        HttpResponse<String> responseListWaypoints = Unirest.get("https://api.spacetraders.io/v2/systems/"+systemSymbol+"/waypoints?type=ENGINEERED_ASTEROID")
+                .header("Accept", "application/json")
+                .asString();
+
+        ResponseBody bodyListWaypoints = mapper.readValue(responseListWaypoints.getBody(), ResponseBody.class);
+        if (bodyListWaypoints.getError() != null) {
+            System.out.println(bodyListWaypoints.getError().getMessage());
+            return;
+        }
+
+        for (JsonNode waypoint : bodyListWaypoints.getData()){
+            ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
+            System.out.println("The Asteroid Symbol is: "+dataListWaypoints.getSymbol());
         }
     }
 }
