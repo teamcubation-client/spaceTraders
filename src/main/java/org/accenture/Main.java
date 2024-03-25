@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.accenture.entities.Survey;
 import org.accenture.entities.responses.*;
 import org.accenture.exceptions.ContractDeclinedException;
 import org.accenture.exceptions.DockShipException;
@@ -14,6 +15,7 @@ import org.accenture.exceptions.OrbitShipException;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,6 +62,50 @@ public class Main {
         //Refuel Ship
         refuelShip(mapper, data, navigateShipResponse);
 
+        //ubicate Orbit Ship && create survey
+        validateOrbitShip(mapper, data);
+        CreateSurveyResponse createSurveyResponse = createSurveyResponse(mapper, data);
+        var symbol = dataAcceptContractResponse.getContract().getTerms().getDeliver()[0].getTradeSymbol().toUpperCase();
+        while(!matchSymbolsBetweenContractAndSurvey(createSurveyResponse,symbol)){
+            createSurveyResponse = createSurveyResponse(mapper, data);
+        }
+        printSurveyDetail(createSurveyResponse);
+
+    }
+
+    private static void printSurveyDetail(CreateSurveyResponse createSurveyResponse) {
+        System.out.println("-- COOLDOWN --");
+        System.out.println("Ship Symbol: "+ createSurveyResponse.getCooldown().getShipSymbol());
+        System.out.println("Total Seconds: "+ createSurveyResponse.getCooldown().getTotalSeconds());
+        System.out.println("Expiration: "+ createSurveyResponse.getCooldown().getExpiration());
+        System.out.println("Remaining Seconds: "+ createSurveyResponse.getCooldown().getRemainingSeconds());
+
+    }
+
+    private static boolean matchSymbolsBetweenContractAndSurvey(CreateSurveyResponse createSurveyResponse, String symbol) {
+        List<Survey> surveyList = List.of(createSurveyResponse.getSurveys());
+
+        return surveyList.stream().map(s->s.getDeposits())
+                .flatMap(d-> Arrays.stream(d))
+                //.peek(de->System.out.println(de.getSymbol())).
+                .anyMatch(dep->dep.getSymbol().toUpperCase().equals(symbol));
+    }
+
+    private static CreateSurveyResponse createSurveyResponse(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
+        ResponseBody bodyd;
+        HttpResponse<String> responseRefuelShip = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/survey")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .asString();
+        bodyd = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
+        if (bodyd.getError() != null) {
+            System.out.println(bodyd.getError().getMessage());
+        }
+        CreateSurveyResponse createSurveyResponse = mapper.convertValue(bodyd.getData(), CreateSurveyResponse.class);
+        return createSurveyResponse;
     }
 
     private static void refuelShip(ObjectMapper mapper, RegisterNewAgentResponse data, NavigateShipResponse navigateShipResponse) throws JsonProcessingException {
