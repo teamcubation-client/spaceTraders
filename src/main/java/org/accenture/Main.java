@@ -9,15 +9,17 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.responses.*;
 import org.accenture.exceptions.ContractDeclinedException;
+import org.accenture.exceptions.DockShipException;
 import org.accenture.exceptions.OrbitShipException;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws JsonProcessingException, InterruptedException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -47,7 +49,50 @@ public class Main {
         validateOrbitShip(mapper, data);
         NavigateShipResponse navigateShipResponse = navigateShip(mapper, data, listOfWayPoints);
 
+        Duration duration = Duration.between( navigateShipResponse.getNav().getRoute().getArrival(),
+                                       navigateShipResponse.getNav().getRoute().getDepartureTime() );
 
+        Thread.sleep(Math.abs(duration.toMillis()) + 1000L); // 1000L interval duration
+
+        //dockShip
+        dockShip(mapper, data);
+
+        //Refuel Ship
+        refuelShip(mapper, data, navigateShipResponse);
+
+    }
+
+    private static void refuelShip(ObjectMapper mapper, RegisterNewAgentResponse data, NavigateShipResponse navigateShipResponse) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> responseRefuelShip = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/refuel")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .asString();
+        body = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+        RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+        System.out.println("-- REFUEL SHIP --");
+        System.out.println("TotalPrice: "+ refuelShipResponse.getTransaction().getTotalPrice());
+    }
+
+    private static void dockShip(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> responseDock = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/dock")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .asString();
+        body = mapper.readValue(responseDock.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            throw new DockShipException();
+        }
     }
 
     private static NavigateShipResponse navigateShip(ObjectMapper mapper, RegisterNewAgentResponse data, List<ListWaypointsResponse> listOfWayPoints) throws JsonProcessingException {
