@@ -40,12 +40,12 @@ public class Main {
         System.out.println("Agent " + agentName + " registered");
         String token = "Bearer " + data.getToken();
 
-        String contractId = String.valueOf(data.getContract().getId());
+        String contractId = data.getContract().getId();
         System.out.println("Contract: " + contractId);
 
 
 //        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
-        String systemSymbol = String.valueOf(data.getShip().getNav().getSystemSymbol());
+        String systemSymbol = data.getShip().getNav().getSystemSymbol();
 
 
         if (body.getError() != null) {
@@ -66,50 +66,35 @@ public class Main {
         ResponseBody bodyContract = mapper.readValue(acceptContract.getBody(),ResponseBody.class);
         AcceptContractResponse contractResponse = mapper.convertValue(bodyContract.getData(), AcceptContractResponse.class);
 
+
+//List Waypoints in System
         if(contractResponse.getContract().isAccepted()){
-            System.out.println("Contract " + contractId + " accepted");
+            HttpResponse<String> listWaypointsInSystem = Unirest.get("/systems/{systemSymbol}/waypoints")
+                    .header("Accept", "application/json")
+                    .routeParam("systemSymbol", systemSymbol)
+                    .queryString("type", "ENGINEERED_ASTEROID")
+                    .asString();
+
+            ResponseBody bodyListWaypoints = mapper.readValue(listWaypointsInSystem.getBody(), ResponseBody.class);
+            for (JsonNode waypoint: bodyListWaypoints.getData()){
+                ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
+                String symbol = dataListWaypoints.getSymbol();
+
+                System.out.println(symbol);
+            }
+
+
+            if (bodyListWaypoints.getError() != null){
+                System.out.println(bodyListWaypoints.getError().getMessage());
+            }
+
         }
 
         if (bodyContract.getError() != null) {
             System.out.println(bodyContract.getError().getMessage());
         }
-//
-
-        HttpResponse<String> listWaypointsInSystem = Unirest.get("/systems/{systemSymbol}/waypoints")
-                .header("Accept", "application/json")
-                .routeParam("systemSymbol", systemSymbol)
-                .queryString("type", "ENGINEERED_ASTEROID")
-                .asString();
 
 
-        ResponseBody bodyListWaypoints = mapper.readValue(listWaypointsInSystem.getBody(), ResponseBody.class);
-        for (JsonNode waypoint: bodyListWaypoints.getData()){
-            ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
-            String symbol = String.valueOf(dataListWaypoints.getSymbol());
-
-            System.out.println(symbol);
-        }
-
-
-
-        if (bodyListWaypoints.getError() != null){
-            System.out.println(bodyListWaypoints.getError().getMessage());
-        }
-
-
-
-//            }
-//
-//            public void orbitShip(String token, String shipSymbol){
-//                HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/{shipSymbol}/orbit")
-//                        .header("Content-Type", "application/json")
-//                        .header("Accept", "application/json")
-//                        .header("Authorization", token)
-//                        .routeParam("shipSymbol", shipSymbol)
-//                        .asString();
-//
-//
-//
             }
 
 
