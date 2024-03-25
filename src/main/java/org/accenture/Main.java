@@ -2,13 +2,18 @@ package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.ArraySerializerBase;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
+
+import java.util.Arrays;
 
 public class Main {
 
@@ -38,19 +43,10 @@ public class Main {
         String contractId = String.valueOf(data.getContract().getId());
         System.out.println("Contract: " + contractId);
 
-//        String tradeSymbol = data.getContract().getTerms().getDeliver()[0].getTradeSymbol();
-//        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
-//        int unitRequired = data.getContract().getTerms().getDeliver()[0].getUnitsRequired();
-//        String shipSymbol = String.valueOf(data.getShip().getSymbol());
-//        String systemSymbol = String.valueOf(data.getShip().getNav().getSystemSymbol());
 
-//        System.out.println("Token: " + token +"\n" +
-//                "Contract ID: " + contractId + "\n"+
-//                "Trade Symbol: "+ tradeSymbol + "\n" +
-//                "Unit Required: " + unitRequired+ "\n" +
-//                "Destination Symbol: "+ destinationSymbol + "\n"+
-//                "System Symbol: " + systemSymbol + "\n" +
-//                "Ship Symbol: " + shipSymbol);
+//        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
+        String systemSymbol = String.valueOf(data.getShip().getNav().getSystemSymbol());
+
 
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
@@ -74,18 +70,34 @@ public class Main {
             System.out.println("Contract " + contractId + " accepted");
         }
 
-        if (body.getError() != null) {
+        if (bodyContract.getError() != null) {
             System.out.println(bodyContract.getError().getMessage());
         }
 //
 
-//        HttpResponse<String> listWaypointsInSystem = Unirest.get("/systems/systemSymbol/waypoints")
-//                .header("Accept", "application/json")
-//                .routeParam("systemSymbol", systemSymbol)
-//                .asString();
+        HttpResponse<String> listWaypointsInSystem = Unirest.get("/systems/{systemSymbol}/waypoints")
+                .header("Accept", "application/json")
+                .routeParam("systemSymbol", systemSymbol)
+                .queryString("type", "ENGINEERED_ASTEROID")
+                .asString();
 
 
-//
+        ResponseBody bodyListWaypoints = mapper.readValue(listWaypointsInSystem.getBody(), ResponseBody.class);
+        for (JsonNode waypoint: bodyListWaypoints.getData()){
+            ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
+            String symbol = String.valueOf(dataListWaypoints.getSymbol());
+
+            System.out.println(symbol);
+        }
+
+
+
+        if (bodyListWaypoints.getError() != null){
+            System.out.println(bodyListWaypoints.getError().getMessage());
+        }
+
+
+
 //            }
 //
 //            public void orbitShip(String token, String shipSymbol){
