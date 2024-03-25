@@ -70,7 +70,6 @@ public class Main {
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer "+ data.getToken())
                 .routeParam("shipSymbol", data.getShip().getSymbol())
-                //.body("{\n \"units\": \"" + navigateShipResponse.getFuel().getConsumed().getAmount() + "\"}")
                 .asString();
         body = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
         if (body.getError() != null) {
