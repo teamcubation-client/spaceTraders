@@ -10,10 +10,7 @@ import kong.unirest.Unirest;
 import lombok.extern.java.Log;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Ship;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.ListWaypointsResponse;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +23,8 @@ public class HttpRequests {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private List<Contract> contracts = new ArrayList<>();
+
+    String token = "";
 
     public RegisterNewAgentResponse registerNewAgent(String agentName) throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -48,13 +47,13 @@ public class HttpRequests {
 
     }
 
-    public List<Contract> getContractsList() throws JsonProcessingException {
+    public List<Contract> getContractsList(String token) throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
 
         HttpResponse<String> response = Unirest.get(LIST_CONTRACTS)
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .asString();
 
         ResponseBody data = objectMapper.readValue(response.getBody(), ResponseBody.class);
@@ -71,13 +70,13 @@ public class HttpRequests {
         return contracts;
     }
 
-    public Contract getContract(String contractId) throws JsonProcessingException {
+    public Contract getContract(String token, String contractId) throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
 
         HttpResponse<String> response = Unirest.get(GET_CONTRACT)
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .routeParam("contractId", contractId)
                 .asString();
 
@@ -91,14 +90,14 @@ public class HttpRequests {
         return contract;
     }
 
-    public AcceptContractResponse acceptContract(String contractId) throws JsonProcessingException {
+    public AcceptContractResponse acceptContract(String token, String contractId) throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
 
         HttpResponse<String> response = Unirest.post(ACCEPT_CONTRACT)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .routeParam("contractId", contractId)
                 .asString();
 
@@ -135,7 +134,7 @@ public class HttpRequests {
         return responses;
     }
 
-    public List<Ship> listShips() throws JsonProcessingException {
+    public List<Ship> listShips(String token) throws JsonProcessingException {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
 
@@ -143,7 +142,7 @@ public class HttpRequests {
 
         HttpResponse<String> response = Unirest.get(LIST_SHIP)
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .asString();
 
         ResponseBody data = objectMapper.readValue(response.getBody(), ResponseBody.class);
@@ -159,14 +158,11 @@ public class HttpRequests {
         return ships;
     }
 
-    public Ship getShip(String shipSymbol) throws JsonProcessingException {
-
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new JavaTimeModule());
+    public Ship getShip(String token, String shipSymbol) throws JsonProcessingException {
 
         HttpResponse<String> response = Unirest.get(GET_SHIP)
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .routeParam("shipSymbol", shipSymbol)
                 .asString();
 
@@ -181,17 +177,52 @@ public class HttpRequests {
         return ship;
     }
 
-    public void moveShipToOrbit(String shipSymbol) {
+    public NavigateShipResponse moveShipToOrbit(String token, String shipSymbol) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
 
         HttpResponse<String> response = Unirest.post(ORBIT_SHIP)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .routeParam("shipSymbol", shipSymbol)
                 .asString();
 
-        log.info(response.getBody());
+        ResponseBody body = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        return objectMapper.convertValue(body.getData(), NavigateShipResponse.class);
 
     }
 
+    public NavigateShipResponse navigateShip(String token, String shipSymbol, String waypointSymbol) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
+        Ship ship = getShip(token, shipSymbol);
+
+            HttpResponse<String> response = Unirest.post(NAVIGATE_SHIP)
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .header("Authorization", "Bearer " + token)
+                    .routeParam("shipSymbol", shipSymbol)
+                    .body("{\n  \"waypointSymbol\": \"" + waypointSymbol + "\"\n}")
+                    .asString();
+
+            ResponseBody body = objectMapper.readValue(response.getBody(), ResponseBody.class);
+            if (body.getError() != null) {
+                System.out.println(body.getError().getMessage());
+            }
+
+            NavigateShipResponse navigateShipResponse = objectMapper.convertValue(body.getData(), NavigateShipResponse.class);
+
+        log.info("Navigate ship response: " + navigateShipResponse);
+        return navigateShipResponse;
+    }
+
+    public double calculateFuel(int currentFuel, int consumedFuel) {
+        return currentFuel - consumedFuel;
+    }
 }
