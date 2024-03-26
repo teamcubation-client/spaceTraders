@@ -28,7 +28,7 @@ public class Main {
         String asteroidSymbol;
         int consumedFuel;
         ZonedDateTime arrivalTime;
-        boolean dockShipIs;
+        boolean isDockShip;
         int totalPrice;
 
         RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
@@ -53,21 +53,19 @@ public class Main {
                 arrivalTime = navigateShipData.getNav().getRoute().getArrival();
                 printDatanavigateShip(consumedFuel, arrivalTime);
 
-                int retries = 0;
-                dockShipIs = false;
-                while( !dockShipIs && (retries < 10)){
+                isDockShip = false;
+                while(!isDockShip){
                     if(dockShip(token, shipSymbol)){
-                        dockShipIs = true;
+                        isDockShip = true;
                     }
-                    retries++;
                     Thread.sleep(10000);
                 }
 
-                if(dockShipIs) {
+                if(isDockShip) {
                     System.out.println("dockShipIs = true");
 
-                    RefuelShipResponse refuelShipData = refuelShip(token, shipSymbol);
-                    totalPrice = refuelShipData.getTransaction().getTotalPrice();                printDatanavigateShip(consumedFuel, arrivalTime);
+                    RefuelShipResponse refuelShipData = refuelShip(token, shipSymbol, consumedFuel);
+                    totalPrice = refuelShipData.getTransaction().getTotalPrice();
                     printDataRefuelShip(totalPrice);
                 }else{
                     System.out.println("dockShipIs = false");
@@ -246,7 +244,7 @@ public class Main {
         return true;
     }
 
-    private static RefuelShipResponse refuelShip(String token, String shipSymbol) throws JsonProcessingException{
+    private static RefuelShipResponse refuelShip(String token, String shipSymbol, int consumedFuel) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -255,9 +253,9 @@ public class Main {
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + token)
-                .body("{\n  \"units\": \"100\",\n  \"fromCargo\": false\n}")
+                .body("{\n  \"units\": \"" + consumedFuel + "\",\n  \"fromCargo\": false\n}")
                 .asString();
-
+        
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
