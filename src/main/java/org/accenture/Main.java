@@ -30,8 +30,12 @@ public class Main {
         systemSymbol = systemSymbol.substring(0, systemSymbol.lastIndexOf('-'));
 
         System.out.println(systemSymbol);
-        System.out.println("ACCEPT CONTRACT: " + acceptContract(token, contract.getId()));
-        System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
+        if(acceptContract(token, contract.getId())) {
+            System.out.println("CONTRACT ACCEPTED");
+            System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
+            //System.out.println("DOCK SHIP: " + AllResponses.dockEndpoint(shipSymbol, token));
+
+        }
 
     }
 }
