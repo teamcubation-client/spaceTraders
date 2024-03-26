@@ -45,7 +45,7 @@ public class Main {
             asteroidSymbol = listWaypointsInSystemData.get(0).getSymbol();
             printDataListWaypoints(asteroidSymbol);
 
-            if(orbitShip(token,shipSymbol)){
+            if(orbitShip(token, shipSymbol)){
                 System.out.println("Ship in Orbit");
                 NavigateShipResponse navigateShipData = navigateShip(token, shipSymbol, asteroidSymbol);
                 consumedFuel = navigateShipData.getFuel().getConsumed().getAmount();
