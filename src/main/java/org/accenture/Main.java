@@ -22,7 +22,6 @@ public class Main {
         System.out.println("REGISTER NEW AGENT: " + registerNewAgentResponse);
         String token = registerNewAgentResponse.getToken();
         Contract contract = registerNewAgentResponse.getContract();
-        String tradeSymbol = registerNewAgentResponse.getContract().getTerms().getDeliver()[0].getTradeSymbol();
         String shipSymbol = registerNewAgentResponse.getShip().getSymbol();
         String systemSymbol = registerNewAgentResponse.getAgent().getHeadquarters();
 
@@ -41,6 +40,8 @@ public class Main {
             System.out.println("SHIP STATUS: " + orbitEndpoint(token, shipSymbol));
 
             navigateEndpoint(token, shipSymbol, waypointSymbol);
+
+            System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol));
         }
 
     }
