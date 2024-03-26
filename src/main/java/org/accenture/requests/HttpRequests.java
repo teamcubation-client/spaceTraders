@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import lombok.extern.java.Log;
+import org.accenture.Mapper;
 import org.accenture.entities.Contract;
 import org.accenture.entities.Ship;
 import org.accenture.entities.responses.*;
@@ -23,6 +24,9 @@ public class HttpRequests {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private List<Contract> contracts = new ArrayList<>();
+
+    private Mapper mapper = new Mapper();
+
 
     String token = "";
 
@@ -220,6 +224,45 @@ public class HttpRequests {
 
         log.info("Navigate ship response: " + navigateShipResponse);
         return navigateShipResponse;
+
+    }
+
+    public NavigateShipResponse dockShip(String token, String shipSymbol) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post(DOCK_SHIP)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .routeParam("shipSymbol", shipSymbol)
+                .asString();
+
+        ResponseBody body = objectMapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        return objectMapper.convertValue(body.getData(), NavigateShipResponse.class);
+    }
+
+    public RefuelShipResponse refuelShip(String token, String shipSymbol) throws JsonProcessingException {
+        HttpResponse<String> response = Unirest.post(REFUEL_SHIP)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .routeParam("shipSymbol", shipSymbol)
+                .body("{\n  \"units\": \"100\",\n  \"fromCargo\": false\n}")
+                .asString();
+
+        ResponseBody body = mapper.getMapper().readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        return mapper.getMapper().convertValue(body.getData(), RefuelShipResponse.class);
+
+
     }
 
     public double calculateFuel(int currentFuel, int consumedFuel) {
