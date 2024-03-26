@@ -92,14 +92,14 @@ public class Main {
 
     private static CreateSurveyResponse createSurveyResponse(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
         ResponseBody responseBody;
-        HttpResponse<String> responseRefuelShip = Unirest.post("https://api.spacetraders.io/v2" +
+        HttpResponse<String> responseSurvey = Unirest.post("https://api.spacetraders.io/v2" +
                         "/my/ships/{shipSymbol}/survey")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer "+ data.getToken())
                 .routeParam("shipSymbol", data.getShip().getSymbol())
                 .asString();
-        responseBody = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
+        responseBody = mapper.readValue(responseSurvey.getBody(), ResponseBody.class);
         if (responseBody.getError() != null) {
             System.out.println(responseBody.getError().getMessage());
         }
