@@ -2,13 +2,18 @@ package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.ArraySerializerBase;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.responses.AcceptContractResponse;
+import org.accenture.entities.responses.ListWaypointsResponse;
 import org.accenture.entities.responses.RegisterNewAgentResponse;
 import org.accenture.entities.responses.ResponseBody;
+
+import java.util.Arrays;
 
 public class Main {
 
@@ -19,10 +24,10 @@ public class Main {
 
         String agentName = "Cami" + (int) (Math.random() * 1000000);
 
-        String apiSpaceTraders = "https://api.spacetraders.io/v2";
+        Unirest.config().defaultBaseUrl("https://api.spacetraders.io/v2");
 
 //registerNewAgent
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/register")
+        HttpResponse<String> response = Unirest.post("/register")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .body("{\n  \"faction\": \"COSMIC\",\n  \"symbol\": \"" + agentName + "\"}")
@@ -35,22 +40,13 @@ public class Main {
         System.out.println("Agent " + agentName + " registered");
         String token = "Bearer " + data.getToken();
 
-        String contractId = String.valueOf(data.getContract().getId());
+        String contractId = data.getContract().getId();
         System.out.println("Contract: " + contractId);
 
-//        String tradeSymbol = data.getContract().getTerms().getDeliver()[0].getTradeSymbol();
-//        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
-//        int unitRequired = data.getContract().getTerms().getDeliver()[0].getUnitsRequired();
-//        String shipSymbol = String.valueOf(data.getShip().getSymbol());
-//        String systemSymbol = String.valueOf(data.getShip().getNav().getSystemSymbol());
 
-//        System.out.println("Token: " + token +"\n" +
-//                "Contract ID: " + contractId + "\n"+
-//                "Trade Symbol: "+ tradeSymbol + "\n" +
-//                "Unit Required: " + unitRequired+ "\n" +
-//                "Destination Symbol: "+ destinationSymbol + "\n"+
-//                "System Symbol: " + systemSymbol + "\n" +
-//                "Ship Symbol: " + shipSymbol);
+//        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
+        String systemSymbol = data.getShip().getNav().getSystemSymbol();
+
 
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
@@ -60,7 +56,7 @@ public class Main {
 
 
         //acceptContract
-        HttpResponse<String> acceptContract = Unirest.post( apiSpaceTraders + "/my/contracts/{contractId}/accept")
+        HttpResponse<String> acceptContract = Unirest.post( "/my/contracts/{contractId}/accept")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .header("Authorization", token)
@@ -70,29 +66,35 @@ public class Main {
         ResponseBody bodyContract = mapper.readValue(acceptContract.getBody(),ResponseBody.class);
         AcceptContractResponse contractResponse = mapper.convertValue(bodyContract.getData(), AcceptContractResponse.class);
 
+
+//List Waypoints in System
         if(contractResponse.getContract().isAccepted()){
-            System.out.println("Contract " + contractId + " accepted");
+            HttpResponse<String> listWaypointsInSystem = Unirest.get("/systems/{systemSymbol}/waypoints")
+                    .header("Accept", "application/json")
+                    .routeParam("systemSymbol", systemSymbol)
+                    .queryString("type", "ENGINEERED_ASTEROID")
+                    .asString();
+
+            ResponseBody bodyListWaypoints = mapper.readValue(listWaypointsInSystem.getBody(), ResponseBody.class);
+            for (JsonNode waypoint: bodyListWaypoints.getData()){
+                ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
+                String symbol = dataListWaypoints.getSymbol();
+
+                System.out.println(symbol);
+            }
+
+
+            if (bodyListWaypoints.getError() != null){
+                System.out.println(bodyListWaypoints.getError().getMessage());
+            }
+
         }
 
-        if (body.getError() != null) {
+        if (bodyContract.getError() != null) {
             System.out.println(bodyContract.getError().getMessage());
         }
-//
 
-//
-//
-//            }
-//
-//            public void orbitShip(String token, String shipSymbol){
-//                HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/{shipSymbol}/orbit")
-//                        .header("Content-Type", "application/json")
-//                        .header("Accept", "application/json")
-//                        .header("Authorization", token)
-//                        .routeParam("shipSymbol", shipSymbol)
-//                        .asString();
-//
-//
-//
+
             }
 
 
