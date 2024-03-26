@@ -32,9 +32,15 @@ public class Main {
         System.out.println(systemSymbol);
         if(acceptContract(token, contract.getId())) {
             System.out.println("CONTRACT ACCEPTED");
-            System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
+
+            String waypointSymbol = waypointsResponse(systemSymbol);
+            System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointSymbol);
+
             //System.out.println("DOCK SHIP: " + AllResponses.dockEndpoint(shipSymbol, token));
 
+            System.out.println("SHIP STATUS: " + orbitEndpoint(token, shipSymbol));
+
+            navigateEndpoint(token, shipSymbol, waypointSymbol);
         }
 
     }

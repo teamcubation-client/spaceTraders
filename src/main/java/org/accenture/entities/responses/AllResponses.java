@@ -9,7 +9,8 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.*;
 
-import java.util.Objects;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class AllResponses {
 
@@ -94,9 +95,55 @@ public class AllResponses {
         String asteroidSymbol = "";
         for (JsonNode jn : body.getData()) {
             ListWaypointsResponse waypoints = mapper.convertValue(jn, ListWaypointsResponse.class);
-                    asteroidSymbol = waypoints.getSymbol();
+            asteroidSymbol = waypoints.getSymbol();
         }
         return asteroidSymbol;
+    }
+
+    public static String orbitEndpoint(String token, String shipSymbol) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/orbit")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        String status = "";
+        for (JsonNode jn : body.getData()) {
+            Nav nav = mapper.convertValue(jn, Nav.class);
+            status = String.valueOf(nav.getStatus());
+        }
+        return status;
+    }
+
+    public static void navigateEndpoint(String token, String shipSymbol, String waypointSymbol) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/navigate")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .body("{\n  \"waypointSymbol\": \"" + waypointSymbol + "\"\n}")
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+        }
+
+        NavigateShipResponse navigateShipResponse = mapper.convertValue(body.getData(), NavigateShipResponse.class);
+        System.out.println("CONSUMED: " + navigateShipResponse.getFuel().getConsumed().getAmount());
+        System.out.println("ARRIVAL: " + navigateShipResponse.getNav().getRoute().getArrival());
     }
 
     public static Nav dockEndpoint(String shipSymbol, String token) throws JsonProcessingException {
