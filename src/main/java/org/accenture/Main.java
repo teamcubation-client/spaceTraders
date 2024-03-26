@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 
 public class Main {
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws JsonProcessingException, InterruptedException {
         String token;
         String contractId;
         String tradeSymbol;
@@ -28,7 +28,8 @@ public class Main {
         String asteroidSymbol;
         int consumedFuel;
         ZonedDateTime arrivalTime;
-
+        boolean dockShipIs;
+        int totalPrice;
 
         RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
         token = registerNewAgentData.getToken();
@@ -51,6 +52,27 @@ public class Main {
                 consumedFuel = navigateShipData.getFuel().getConsumed().getAmount();
                 arrivalTime = navigateShipData.getNav().getRoute().getArrival();
                 printDatanavigateShip(consumedFuel, arrivalTime);
+
+                int retries = 0;
+                dockShipIs = false;
+                while( !dockShipIs && (retries < 10)){
+                    if(dockShip(token, shipSymbol)){
+                        dockShipIs = true;
+                    }
+                    retries++;
+                    Thread.sleep(10000);
+                }
+
+                if(dockShipIs) {
+                    System.out.println("dockShipIs = true");
+
+                    RefuelShipResponse refuelShipData = refuelShip(token, shipSymbol);
+                    totalPrice = refuelShipData.getTransaction().getTotalPrice();                printDatanavigateShip(consumedFuel, arrivalTime);
+                    printDataRefuelShip(totalPrice);
+                }else{
+                    System.out.println("dockShipIs = false");
+                }
+
             }
         }
     }
@@ -205,5 +227,51 @@ public class Main {
         System.out.println(arrivalTimeData);
     }
 
+    private static boolean dockShip(String token, String shipSymbol) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/dock")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    private static RefuelShipResponse refuelShip(String token, String shipSymbol) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .body("{\n  \"units\": \"100\",\n  \"fromCargo\": false\n}")
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return null;
+        }
+
+        RefuelShipResponse data = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+        return data;
+    }
+
+    private static void printDataRefuelShip(int totalPriceData ){
+        System.out.print("Total price:     ");
+        System.out.println(totalPriceData);
+
+    }
 
 }
