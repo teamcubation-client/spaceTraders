@@ -66,7 +66,7 @@ public class Main {
         validateOrbitShip(mapper, data);
         CreateSurveyResponse createSurveyResponse = createSurveyResponse(mapper, data);
         var symbol = dataAcceptContractResponse.getContract().getTerms().getDeliver()[0].getTradeSymbol().toUpperCase();
-        while(!matchSymbolsBetweenContractAndSurvey(createSurveyResponse,symbol)){
+        while(!matchSymbolsBetweenContractAndSurvey(createSurveyResponse, symbol)){
             createSurveyResponse = createSurveyResponse(mapper, data);
         }
         printSurveyDetail(createSurveyResponse);
@@ -87,12 +87,11 @@ public class Main {
 
         return surveyList.stream().map(s->s.getDeposits())
                 .flatMap(d-> Arrays.stream(d))
-                //.peek(de->System.out.println(de.getSymbol())).
                 .anyMatch(dep->dep.getSymbol().toUpperCase().equals(symbol));
     }
 
     private static CreateSurveyResponse createSurveyResponse(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
-        ResponseBody bodyd;
+        ResponseBody responseBody;
         HttpResponse<String> responseRefuelShip = Unirest.post("https://api.spacetraders.io/v2" +
                         "/my/ships/{shipSymbol}/survey")
                 .header("Content-Type", "application/json")
@@ -100,11 +99,11 @@ public class Main {
                 .header("Authorization", "Bearer "+ data.getToken())
                 .routeParam("shipSymbol", data.getShip().getSymbol())
                 .asString();
-        bodyd = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
-        if (bodyd.getError() != null) {
-            System.out.println(bodyd.getError().getMessage());
+        responseBody = mapper.readValue(responseRefuelShip.getBody(), ResponseBody.class);
+        if (responseBody.getError() != null) {
+            System.out.println(responseBody.getError().getMessage());
         }
-        CreateSurveyResponse createSurveyResponse = mapper.convertValue(bodyd.getData(), CreateSurveyResponse.class);
+        CreateSurveyResponse createSurveyResponse = mapper.convertValue(responseBody.getData(), CreateSurveyResponse.class);
         return createSurveyResponse;
     }
 
