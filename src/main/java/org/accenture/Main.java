@@ -59,26 +59,26 @@ public class Main {
             System.out.println(bodyAccContract.getError().getMessage());
             return;
         }
+        //IF THE CONTRACT IS ACCEPTED IT WILL LIST ASTEROID WAYPOINTS
         AcceptContractResponse dataAccContract = mapper.convertValue(bodyAccContract.getData(), AcceptContractResponse.class);
         if(dataAccContract.getContract().isAccepted()){
             System.out.println("The contract ID: "+contractId+" has been accepted successfully.\n");
             System.out.println("LISTING ENGINEERED ASTEROID WAYPOINTS...");
-        }
 
-        //LIST WAYPOINTS IN SYSTEM
-        HttpResponse<String> responseListWaypoints = Unirest.get("https://api.spacetraders.io/v2/systems/"+systemSymbol+"/waypoints?type=ENGINEERED_ASTEROID")
-                .header("Accept", "application/json")
-                .asString();
+            HttpResponse<String> responseListWaypoints = Unirest.get("https://api.spacetraders.io/v2/systems/"+systemSymbol+"/waypoints?type=ENGINEERED_ASTEROID")
+                    .header("Accept", "application/json")
+                    .asString();
 
-        ResponseBody bodyListWaypoints = mapper.readValue(responseListWaypoints.getBody(), ResponseBody.class);
-        if (bodyListWaypoints.getError() != null) {
-            System.out.println(bodyListWaypoints.getError().getMessage());
-            return;
-        }
+            ResponseBody bodyListWaypoints = mapper.readValue(responseListWaypoints.getBody(), ResponseBody.class);
+            if (bodyListWaypoints.getError() != null) {
+                System.out.println(bodyListWaypoints.getError().getMessage());
+                return;
+            }
 
-        for (JsonNode waypoint : bodyListWaypoints.getData()){
-            ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
-            System.out.println("The Asteroid Symbol is: "+dataListWaypoints.getSymbol());
+            for (JsonNode waypoint : bodyListWaypoints.getData()){
+                ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
+                System.out.println("The Asteroid Symbol is: "+dataListWaypoints.getSymbol());
+            }
         }
     }
 }
