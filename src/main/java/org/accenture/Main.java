@@ -8,14 +8,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.Point;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.ListWaypointsResponse;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.time.ZonedDateTime;
 
 public class Main {
 
@@ -28,6 +26,9 @@ public class Main {
         String systemSymbol;
         String shipSymbol;
         String asteroidSymbol;
+        int consumedFuel;
+        ZonedDateTime arrivalTime;
+
 
         RegisterNewAgentResponse registerNewAgentData = registerNewAgent();
         token = registerNewAgentData.getToken();
@@ -43,6 +44,14 @@ public class Main {
             List<ListWaypointsResponse> listWaypointsInSystemData = listWaypointsInSystem(systemSymbol);
             asteroidSymbol = listWaypointsInSystemData.get(0).getSymbol();
             printDataListWaypoints(asteroidSymbol);
+
+            if(orbitShip(token,shipSymbol)){
+                System.out.println("Ship in Orbit");
+                NavigateShipResponse navigateShipData = navigateShip(token, shipSymbol, asteroidSymbol);
+                consumedFuel = navigateShipData.getFuel().getConsumed().getAmount();
+                arrivalTime = navigateShipData.getNav().getRoute().getArrival();
+                printDatanavigateShip(consumedFuel, arrivalTime);
+            }
         }
     }
     private static RegisterNewAgentResponse registerNewAgent() throws JsonProcessingException{
@@ -146,5 +155,55 @@ public class Main {
         System.out.print("Asteroid Symbol: ");
         System.out.println(asteroidSymbolData);
     }
+
+    private static boolean orbitShip(String token, String shipSymbol) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/orbit")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    private static NavigateShipResponse navigateShip(String token, String shipSymbol, String asteroidSymbol) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/navigate")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .body("{\n  \"waypointSymbol\": \"" + asteroidSymbol + "\"\n}")
+                .asString();
+
+        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+        if (body.getError() != null) {
+            System.out.println(body.getError().getMessage());
+            return null;
+        }
+
+        NavigateShipResponse data = mapper.convertValue(body.getData(), NavigateShipResponse.class);
+        return data;
+    }
+
+    private static void printDatanavigateShip(int consumedFuelData, ZonedDateTime arrivalTimeData ){
+        System.out.print("Consumed fuel:   ");
+        System.out.println(consumedFuelData);
+
+        System.out.print("Arrival time:    ");
+        System.out.println(arrivalTimeData);
+    }
+
 
 }
