@@ -14,5 +14,5 @@ public class Constant {
     public static final String GET_CONTRACT = "https://api.spacetraders.io/v2/my/contracts/{contractId}";
     public static final String NAVIGATE_SHIP = "https://api.spacetraders.io/v2/my/ships/{shipSymbol}/navigate";
 
-    
+
 }
