@@ -41,7 +41,7 @@ public class Main {
 
             navigateEndpoint(token, shipSymbol, waypointSymbol);
 
-            System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol));
+            //System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol));
         }
 
     }
