@@ -8,11 +8,9 @@ import com.fasterxml.jackson.databind.ser.std.ArraySerializerBase;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.ListWaypointsResponse;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 public class Main {
@@ -46,6 +44,7 @@ public class Main {
 
 //        String destinationSymbol = data.getContract().getTerms().getDeliver()[0].getDestinationSymbol();
         String systemSymbol = data.getShip().getNav().getSystemSymbol();
+        String shipSymbol = data.getShip().getSymbol();
 
 
         if (body.getError() != null) {
@@ -78,10 +77,52 @@ public class Main {
             ResponseBody bodyListWaypoints = mapper.readValue(listWaypointsInSystem.getBody(), ResponseBody.class);
             for (JsonNode waypoint: bodyListWaypoints.getData()){
                 ListWaypointsResponse dataListWaypoints = mapper.convertValue(waypoint, ListWaypointsResponse.class);
-                String symbol = dataListWaypoints.getSymbol();
+                String waypointSymbol = dataListWaypoints.getSymbol();
 
-                System.out.println(symbol);
-            }
+                System.out.println("Waypoint Symbol: " + waypointSymbol);
+
+                //orbit Ship
+                HttpResponse<String> bodyOrbitShip = Unirest.post("/my/ships/{shipSymbol}/orbit")
+                        .header("Content-Type", "application/json")
+                        .header("Accept", "application/json")
+                        .header("Authorization", token)
+                        .routeParam("shipSymbol", shipSymbol)
+                        .asString();
+
+                ResponseBody dataOrbit = mapper.readValue(bodyOrbitShip.getBody(), ResponseBody.class);
+                OrbitShipResponse orbitResponse = mapper.convertValue(dataOrbit.getData(), OrbitShipResponse.class);
+
+
+
+                //navigate ship
+                HttpResponse<String> navigateShip = Unirest.post("/my/ships/{shipSymbol}/navigate")
+                        .header("Content-Type", "application/json")
+                        .header("Accept", "application/json")
+                        .header("Authorization", token)
+                        .routeParam("shipSymbol", shipSymbol)
+                        .body("{\n  \"waypointSymbol\": \"" + waypointSymbol +"\"\n}")
+                        .asString();
+
+                ResponseBody bodyNavigateShip = mapper.readValue(navigateShip.getBody(),ResponseBody.class);
+                NavigateShipResponse navigateResponse = mapper.convertValue(bodyNavigateShip.getData(), NavigateShipResponse.class);
+
+                int consumedFuel = navigateResponse.getFuel().getConsumed().getAmount();
+                ZonedDateTime arrivalTime = navigateResponse.getNav().getRoute().getArrival();
+
+                if (bodyNavigateShip.getError() != null){
+                    System.out.println(bodyNavigateShip.getError().getMessage());
+                }
+
+                System.out.println("Consumed fuel: " +
+                        consumedFuel + "\n" +
+                        "Arrival time: " +
+                        arrivalTime);
+                }
+
+
+
+
+
 
 
             if (bodyListWaypoints.getError() != null){
@@ -93,6 +134,9 @@ public class Main {
         if (bodyContract.getError() != null) {
             System.out.println(bodyContract.getError().getMessage());
         }
+
+
+
 
 
             }
