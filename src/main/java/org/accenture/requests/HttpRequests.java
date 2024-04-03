@@ -226,13 +226,13 @@ public class HttpRequests {
         return mapper.getMapper().convertValue(body.getData(), NavigateShipResponse.class);
     }
 
-    public RefuelShipResponse refuelShip(String token, String shipSymbol, int units) throws JsonProcessingException {
+    public RefuelShipResponse refuelShip(String token, String shipSymbol, int consumedFuel) throws JsonProcessingException {
         HttpResponse<String> response = Unirest.post(REFUEL_SHIP)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .routeParam("shipSymbol", shipSymbol)
-                .body("{\n  \"units\": \"" + units + "\",\n  \"fromCargo\": false\n}")
+                .body("{\n  \"units\": \"" + consumedFuel + "\",\n  \"fromCargo\": false\n}")
                 .asString();
 
         ResponseBody body = mapper.getMapper().readValue(response.getBody(), ResponseBody.class);

@@ -34,7 +34,6 @@ public class Main {
         ZonedDateTime departureTime;
         ZonedDateTime arrivalTime;
         int price = 0;
-        int units = 0;
 
         Deliver deliver[] = newAgent.getContract().getTerms().getDeliver();
         for (Deliver deliver1 : deliver) {
@@ -79,7 +78,6 @@ public class Main {
             departureTime = navigateResponse.getNav().getRoute().getDepartureTime();
             arrivalTime = navigateResponse.getNav().getRoute().getArrival();
             remainingFuel = httpRequests.calculateFuel(currentFuel, consumedFuel);
-            units = consumedFuel;
             System.out.println("Current fuel in ship: " + currentFuel);
             System.out.println("Total amount of fuel consumed: " + consumedFuel);
             System.out.println("Remaining fuel: " + remainingFuel);
@@ -95,11 +93,11 @@ public class Main {
             System.out.println("Ship successfully docked in " + navigateShip.getNav().getWaypointSymbol());
 
             System.out.println("Refuel ship");
-            RefuelShipResponse refuelShipResponse = httpRequests.refuelShip(token, shipSymbol, units);
+            RefuelShipResponse refuelShipResponse = httpRequests.refuelShip(token, shipSymbol, consumedFuel);
             price = refuelShipResponse.getTransaction().getPricePerUnit();
             currentFuel = refuelShipResponse.getFuel().getCurrent();
             System.out.println("Price per unit: " + price);
-            System.out.println("Units of fuel purchased: " + units);
+            System.out.println("Units of fuel purchased: " + consumedFuel);
             System.out.println("Current fuel: " + currentFuel);
 
 
