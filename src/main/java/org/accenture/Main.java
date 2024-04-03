@@ -42,15 +42,6 @@ public class Main {
             System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
 
             int shipFuel = navigateShipResponse.getFuel().getCurrent();
-
-            try {
-                    Thread.sleep(60000);
-                    System.out.println(navigateShipResponse.getNav().getStatus());
-                } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }   catch (Exception e) {
-                System.out.println(e);
-            }
            // System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, consumed, shipFuel, shipStatus));
         }
 
