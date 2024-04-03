@@ -7,10 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.Contract;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.AllResponses;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 
 //import static org.accenture.entities.responses.AllResponses.agentEndpoint;
 import static org.accenture.entities.responses.AllResponses.*;
@@ -35,13 +32,26 @@ public class Main {
             String waypointSymbol = waypointsResponse(systemSymbol);
             System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointSymbol);
 
-            //System.out.println("DOCK SHIP: " + AllResponses.dockEndpoint(shipSymbol, token));
-
             System.out.println("SHIP STATUS: " + orbitEndpoint(token, shipSymbol));
 
-            navigateEndpoint(token, shipSymbol, waypointSymbol);
+            NavigateShipResponse navigateShipResponse = navigateEndpoint(token, shipSymbol, waypointSymbol);
 
-            //System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol));
+            String shipStatus = String.valueOf(navigateShipResponse.getNav().getStatus());
+            int consumed = navigateShipResponse.getFuel().getConsumed().getAmount();
+            String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
+            System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
+
+            int shipFuel = navigateShipResponse.getFuel().getCurrent();
+
+            try {
+                    Thread.sleep(60000);
+                    System.out.println(navigateShipResponse.getNav().getStatus());
+                } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }   catch (Exception e) {
+                System.out.println(e);
+            }
+           // System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, consumed, shipFuel, shipStatus));
         }
 
     }

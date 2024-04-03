@@ -9,8 +9,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.*;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class AllResponses {
 
@@ -117,14 +116,13 @@ public class AllResponses {
         }
 
         String status = "";
-        for (JsonNode jn : body.getData()) {
-            Nav nav = mapper.convertValue(jn, Nav.class);
-            status = String.valueOf(nav.getStatus());
-        }
+        Nav nav = mapper.convertValue(body, Nav.class);
+        status = String.valueOf(nav.getStatus());
+
         return status;
     }
 
-    public static void navigateEndpoint(String token, String shipSymbol, String waypointSymbol) throws JsonProcessingException {
+    public static NavigateShipResponse navigateEndpoint(String token, String shipSymbol, String waypointSymbol) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -142,8 +140,10 @@ public class AllResponses {
         }
 
         NavigateShipResponse navigateShipResponse = mapper.convertValue(body.getData(), NavigateShipResponse.class);
-        System.out.println("CONSUMED: " + navigateShipResponse.getFuel().getConsumed().getAmount());
+        return navigateShipResponse;
+        /*System.out.println("CONSUMED: " + navigateShipResponse.getFuel().getConsumed().getAmount());
         System.out.println("ARRIVAL: " + navigateShipResponse.getNav().getRoute().getArrival());
+        */
     }
 
     public static Nav dockEndpoint(String shipSymbol, String token) throws JsonProcessingException {
@@ -167,16 +167,18 @@ public class AllResponses {
         return nav;
     }
 
-    public static int refuelEndpoint(String token, String shipSymbol) throws JsonProcessingException {
+    public static int refuelEndpoint(String token, String shipSymbol, int consumed, int startingValue, String shipStatus) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
+
+        int fuelToLoad = calculateFuel(consumed, startingValue);
 
         HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer "+token)
-                .body("{\n  \"units\": \"100\",\n  \"fromCargo\": false\n}")
+                .body("{\n  \"units\": \"" + consumed + "\",\n  \"fromCargo\": false\n}")
                 .asString();
 
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
@@ -185,9 +187,19 @@ public class AllResponses {
         }
 
         RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+        if(Objects.equals(shipStatus, "IN_ORBIT")) {
+            System.out.println("SHIP STILL IN ORBIT");
+            try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return refuelShipResponse.getTransaction().getTotalPrice();
+    }
 
-        Transaction transaction = refuelShipResponse.getTransaction();
-        return transaction.getTotalPrice();
+    public static int calculateFuel(int consumed, int startingValue) {
+        return startingValue - consumed;
     }
 }
 
