@@ -7,10 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.Contract;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.AllResponses;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
-import org.accenture.entities.responses.ResponseBody;
+import org.accenture.entities.responses.*;
 
 //import static org.accenture.entities.responses.AllResponses.agentEndpoint;
 import static org.accenture.entities.responses.AllResponses.*;
@@ -22,7 +19,6 @@ public class Main {
         System.out.println("REGISTER NEW AGENT: " + registerNewAgentResponse);
         String token = registerNewAgentResponse.getToken();
         Contract contract = registerNewAgentResponse.getContract();
-        String tradeSymbol = registerNewAgentResponse.getContract().getTerms().getDeliver()[0].getTradeSymbol();
         String shipSymbol = registerNewAgentResponse.getShip().getSymbol();
         String systemSymbol = registerNewAgentResponse.getAgent().getHeadquarters();
 
@@ -30,8 +26,25 @@ public class Main {
         systemSymbol = systemSymbol.substring(0, systemSymbol.lastIndexOf('-'));
 
         System.out.println(systemSymbol);
-        System.out.println("ACCEPT CONTRACT: " + acceptContract(token, contract.getId()));
-        // System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointsResponse(systemSymbol));
+        if(acceptContract(token, contract.getId())) {
+            System.out.println("CONTRACT ACCEPTED");
+
+            String waypointSymbol = waypointsResponse(systemSymbol);
+            System.out.println("LIST WAYPOINTS IN SYSTEM: " + waypointSymbol);
+
+            System.out.println("SHIP STATUS: " + orbitEndpoint(token, shipSymbol));
+
+            NavigateShipResponse navigateShipResponse = navigateEndpoint(token, shipSymbol, waypointSymbol);
+
+
+            String shipStatus = String.valueOf(navigateShipResponse.getNav().getStatus());
+            int consumed = navigateShipResponse.getFuel().getConsumed().getAmount();
+            String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
+            System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
+
+            int shipFuel = navigateShipResponse.getFuel().getCurrent();
+           // System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, consumed, shipFuel, shipStatus));
+        }
 
     }
 }
