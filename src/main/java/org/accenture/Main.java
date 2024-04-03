@@ -79,7 +79,7 @@ public class Main {
             departureTime = navigateResponse.getNav().getRoute().getDepartureTime();
             arrivalTime = navigateResponse.getNav().getRoute().getArrival();
             remainingFuel = httpRequests.calculateFuel(currentFuel, consumedFuel);
-            units = navigateResponse.getFuel().getConsumed().getAmount();
+            units = consumedFuel;
             System.out.println("Current fuel in ship: " + currentFuel);
             System.out.println("Total amount of fuel consumed: " + consumedFuel);
             System.out.println("Remaining fuel: " + remainingFuel);
