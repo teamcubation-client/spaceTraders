@@ -36,6 +36,7 @@ public class Main {
 
             NavigateShipResponse navigateShipResponse = navigateEndpoint(token, shipSymbol, waypointSymbol);
 
+
             String shipStatus = String.valueOf(navigateShipResponse.getNav().getStatus());
             int consumed = navigateShipResponse.getFuel().getConsumed().getAmount();
             String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
