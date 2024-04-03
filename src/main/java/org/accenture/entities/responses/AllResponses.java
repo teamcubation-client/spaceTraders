@@ -116,7 +116,7 @@ public class AllResponses {
         }
 
         String status = "";
-        Nav nav = mapper.convertValue(body, Nav.class);
+        Nav nav = mapper.convertValue(body.getData().get("nav"), Nav.class);
         status = String.valueOf(nav.getStatus());
 
         return status;
@@ -167,6 +167,7 @@ public class AllResponses {
         return nav;
     }
 
+    /*
     public static int refuelEndpoint(String token, String shipSymbol, int consumed, int startingValue, String shipStatus) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -201,5 +202,6 @@ public class AllResponses {
     public static int calculateFuel(int consumed, int startingValue) {
         return startingValue - consumed;
     }
+    */
 }
 
