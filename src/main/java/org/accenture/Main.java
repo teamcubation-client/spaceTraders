@@ -45,9 +45,6 @@ public class Main {
             String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
             System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
 
-            Nav nav = dockEndpoint(shipSymbol, token);
-            System.out.println(nav.getStatus());
-
             int fuelToLoad = navigateShipResponse.getFuel().getConsumed().getAmount();
             System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, fuelToLoad, arrivalTime));
 

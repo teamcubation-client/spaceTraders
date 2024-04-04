@@ -163,7 +163,7 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        Nav nav = mapper.convertValue(body.getData().get("nav"), Nav.class);
+        Nav nav = mapper.convertValue(body.getData(), Nav.class);
 
         return nav;
     }
@@ -202,22 +202,24 @@ public class AllResponses {
                 Thread.sleep(secondsToArrive*1000);
 
                 if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "IN_ORBIT")) {
-                    System.out.println("SHIP STATUS IS NOW: " + dockEndpoint(shipSymbol, token).getStatus());
+                    System.out.println("SHIP STATUS IS: IN_ORBIT");
+                    System.out.println("SHIP HAS BEEN DOCKED. SHIP STATUS: " + dockEndpoint(shipSymbol, token).getStatus());
+                    if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "DOCKED")) {
+                        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
+                                .header("Content-Type", "application/json")
+                                .header("Accept", "application/json")
+                                .header("Authorization", "Bearer "+token)
+                                .body("{\n  \"units\": \"" + consumed + "\",\n  \"fromCargo\": false\n}")
+                                .asString();
 
-                    HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
-                            .header("Content-Type", "application/json")
-                            .header("Accept", "application/json")
-                            .header("Authorization", "Bearer "+token)
-                            .body("{\n  \"units\": \"" + consumed + "\",\n  \"fromCargo\": false\n}")
-                            .asString();
+                        ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+                        if (body.getError() != null) {
+                            System.out.println(body.getError().getMessage());
+                        }
 
-                    ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
-                    if (body.getError() != null) {
-                        System.out.println(body.getError().getMessage());
+                        RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+                        totalPrice = refuelShipResponse.getTransaction().getTotalPrice();
                     }
-
-                    RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
-                    totalPrice = refuelShipResponse.getTransaction().getTotalPrice();
                 }
 
             } catch (InterruptedException e) {
