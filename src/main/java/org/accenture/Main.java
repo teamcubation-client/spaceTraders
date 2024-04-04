@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.Contract;
+import org.accenture.entities.Nav;
 import org.accenture.entities.responses.*;
 
 //import static org.accenture.entities.responses.AllResponses.agentEndpoint;
@@ -40,16 +41,16 @@ public class Main {
             ZonedDateTime arrivalTime = navigateShipResponse.getNav().getRoute().getArrival();
             System.out.println("ARRIVAL TIME: " + arrivalTime.toString());
 
-            String shipStatus = String.valueOf(navigateShipResponse.getNav().getStatus());
             int consumed = navigateShipResponse.getFuel().getConsumed().getAmount();
             String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
             System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
 
+            Nav nav = dockEndpoint(shipSymbol, token);
+            System.out.println(nav.getStatus());
+
             int fuelToLoad = navigateShipResponse.getFuel().getConsumed().getAmount();
-            //System.out.println("SHIP STATUS: " + getShipStatusEndpoint(token, shipSymbol));
             System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, fuelToLoad, arrivalTime));
 
         }
-
     }
 }

@@ -10,6 +10,7 @@ import kong.unirest.Unirest;
 import org.accenture.entities.*;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class AllResponses {
@@ -162,8 +163,7 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-
-        Nav nav = mapper.convertValue(body.getData(), Nav.class);
+        Nav nav = mapper.convertValue(body.getData().get("nav"), Nav.class);
 
         return nav;
     }
@@ -191,15 +191,19 @@ public class AllResponses {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
-        RefuelShipResponse refuelShipResponse = null;
+        int totalPrice = 0;
 
-        String shipStatusResult = getShipStatusEndpoint(token, shipSymbol);
-        if(Objects.equals(shipStatusResult, "IN_TRANSIT")) {
-            System.out.println("SHIP STILL IN ORBIT");
+        if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "IN_TRANSIT")) {
+            System.out.println("SHIP STILL IN TRANSIT... AWAITING ARRIVAL");
             try {
-                Thread.sleep(arrivalTime.getSecond());
+                ZonedDateTime currentTime = ZonedDateTime.now();
+                long secondsToArrive = currentTime.until(arrivalTime, ChronoUnit.SECONDS);
+                System.out.println(secondsToArrive);
+                Thread.sleep(secondsToArrive*1000);
 
-                if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "DOCKED")) {
+                if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "IN_ORBIT")) {
+                    System.out.println("SHIP STATUS IS NOW: " + dockEndpoint(shipSymbol, token).getStatus());
+
                     HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
                             .header("Content-Type", "application/json")
                             .header("Accept", "application/json")
@@ -212,21 +216,15 @@ public class AllResponses {
                         System.out.println(body.getError().getMessage());
                     }
 
-                    refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+                    RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+                    totalPrice = refuelShipResponse.getTransaction().getTotalPrice();
                 }
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        return Objects.requireNonNull(refuelShipResponse).getTransaction().getTotalPrice();
+        return totalPrice;
     }
-
-    /*
-    public static int calculateFuel(int consumed, int currentFuel) {
-        return currentFuel - consumed;
-    }
-    */
-
 }
 
