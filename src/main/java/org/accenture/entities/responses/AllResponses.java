@@ -9,6 +9,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.accenture.entities.*;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class AllResponses {
@@ -167,19 +168,14 @@ public class AllResponses {
         return nav;
     }
 
-    /*
-    public static int refuelEndpoint(String token, String shipSymbol, int consumed, int startingValue, String shipStatus) throws JsonProcessingException {
+    public static String getShipStatusEndpoint(String token, String shipSymbol) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
-        int fuelToLoad = calculateFuel(consumed, startingValue);
-
-        HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
-                .header("Content-Type", "application/json")
+        HttpResponse<String> response = Unirest.get("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/nav")
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer "+token)
-                .body("{\n  \"units\": \"" + consumed + "\",\n  \"fromCargo\": false\n}")
+                .header("Authorization", "Bearer " + token)
                 .asString();
 
         ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
@@ -187,21 +183,50 @@ public class AllResponses {
             System.out.println(body.getError().getMessage());
         }
 
-        RefuelShipResponse refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
-        if(Objects.equals(shipStatus, "IN_ORBIT")) {
+        return mapper.convertValue(body.getData().get("status"), String.class);
+    }
+
+    public static int refuelEndpoint(String token, String shipSymbol, int consumed, ZonedDateTime arrivalTime) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+
+        RefuelShipResponse refuelShipResponse = null;
+
+        String shipStatusResult = getShipStatusEndpoint(token, shipSymbol);
+        if(Objects.equals(shipStatusResult, "IN_TRANSIT")) {
             System.out.println("SHIP STILL IN ORBIT");
             try {
-                Thread.sleep(60000);
+                Thread.sleep(arrivalTime.getSecond());
+
+                if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "DOCKED")) {
+                    HttpResponse<String> response = Unirest.post("https://api.spacetraders.io/v2/my/ships/" + shipSymbol + "/refuel")
+                            .header("Content-Type", "application/json")
+                            .header("Accept", "application/json")
+                            .header("Authorization", "Bearer "+token)
+                            .body("{\n  \"units\": \"" + consumed + "\",\n  \"fromCargo\": false\n}")
+                            .asString();
+
+                    ResponseBody body = mapper.readValue(response.getBody(), ResponseBody.class);
+                    if (body.getError() != null) {
+                        System.out.println(body.getError().getMessage());
+                    }
+
+                    refuelShipResponse = mapper.convertValue(body.getData(), RefuelShipResponse.class);
+                }
+
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        return refuelShipResponse.getTransaction().getTotalPrice();
+        return Objects.requireNonNull(refuelShipResponse).getTransaction().getTotalPrice();
     }
 
-    public static int calculateFuel(int consumed, int startingValue) {
-        return startingValue - consumed;
+    /*
+    public static int calculateFuel(int consumed, int currentFuel) {
+        return currentFuel - consumed;
     }
     */
+
 }
 

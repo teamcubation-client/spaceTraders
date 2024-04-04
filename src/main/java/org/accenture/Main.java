@@ -10,6 +10,8 @@ import org.accenture.entities.Contract;
 import org.accenture.entities.responses.*;
 
 //import static org.accenture.entities.responses.AllResponses.agentEndpoint;
+import java.time.ZonedDateTime;
+
 import static org.accenture.entities.responses.AllResponses.*;
 
 
@@ -35,15 +37,18 @@ public class Main {
             System.out.println("SHIP STATUS: " + orbitEndpoint(token, shipSymbol));
 
             NavigateShipResponse navigateShipResponse = navigateEndpoint(token, shipSymbol, waypointSymbol);
-
+            ZonedDateTime arrivalTime = navigateShipResponse.getNav().getRoute().getArrival();
+            System.out.println("ARRIVAL TIME: " + arrivalTime.toString());
 
             String shipStatus = String.valueOf(navigateShipResponse.getNav().getStatus());
             int consumed = navigateShipResponse.getFuel().getConsumed().getAmount();
             String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
             System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
 
-            int shipFuel = navigateShipResponse.getFuel().getCurrent();
-           // System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, consumed, shipFuel, shipStatus));
+            int fuelToLoad = navigateShipResponse.getFuel().getConsumed().getAmount();
+            //System.out.println("SHIP STATUS: " + getShipStatusEndpoint(token, shipSymbol));
+            System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, fuelToLoad, arrivalTime));
+
         }
 
     }
