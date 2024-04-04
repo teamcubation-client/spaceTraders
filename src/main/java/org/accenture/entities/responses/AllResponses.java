@@ -32,9 +32,8 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        RegisterNewAgentResponse data = mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
 
-        return data;
+        return mapper.convertValue(body.getData(), RegisterNewAgentResponse.class);
     }
 
     public static Agent agentEndpoint(String token) throws JsonProcessingException {
@@ -117,7 +116,7 @@ public class AllResponses {
             System.out.println(body.getError().getMessage());
         }
 
-        String status = "";
+        String status;
         Nav nav = mapper.convertValue(body.getData().get("nav"), Nav.class);
         status = String.valueOf(nav.getStatus());
 
@@ -141,8 +140,7 @@ public class AllResponses {
             System.out.println(body.getError().getMessage());
         }
 
-        NavigateShipResponse navigateShipResponse = mapper.convertValue(body.getData(), NavigateShipResponse.class);
-        return navigateShipResponse;
+        return mapper.convertValue(body.getData(), NavigateShipResponse.class);
         /*System.out.println("CONSUMED: " + navigateShipResponse.getFuel().getConsumed().getAmount());
         System.out.println("ARRIVAL: " + navigateShipResponse.getNav().getRoute().getArrival());
         */
@@ -163,9 +161,9 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        Nav nav = mapper.convertValue(body.getData(), Nav.class);
+        //Nav nav = mapper.convertValue(body.getData(), Nav.class);
 
-        return nav;
+        return mapper.convertValue(body.getData().get("nav"), Nav.class);
     }
 
     public static String getShipStatusEndpoint(String token, String shipSymbol) throws JsonProcessingException {
