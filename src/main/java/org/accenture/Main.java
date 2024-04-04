@@ -2,17 +2,15 @@ package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.accenture.entities.Deliver;
-import org.accenture.entities.responses.AcceptContractResponse;
-import org.accenture.entities.responses.ListWaypointsResponse;
-import org.accenture.entities.responses.NavigateShipResponse;
-import org.accenture.entities.responses.RegisterNewAgentResponse;
+import org.accenture.entities.responses.*;
 import org.accenture.requests.HttpRequests;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws JsonProcessingException, InterruptedException {
 
         HttpRequests httpRequests = new HttpRequests();
 
@@ -32,9 +30,10 @@ public class Main {
         String shipStatus = "";
         int currentFuel = 0;
         int consumedFuel = 0;
-        double remainingFuel = 0;
+        int remainingFuel = 0;
         ZonedDateTime departureTime;
         ZonedDateTime arrivalTime;
+        int price = 0;
 
         Deliver deliver[] = newAgent.getContract().getTerms().getDeliver();
         for (Deliver deliver1 : deliver) {
@@ -85,9 +84,25 @@ public class Main {
             System.out.println("Departure time: " + departureTime);
             System.out.println("Arrival time: " + arrivalTime);
 
+            System.out.println("Ship " + shipSymbol + " is currently in transit");
+            Duration timeToArrive = httpRequests.waitingTime(departureTime, arrivalTime);
+            Thread.sleep(timeToArrive.toMillis());
+
+            System.out.println("Dock ship");
+            NavigateShipResponse navigateShip = httpRequests.dockShip(token, shipSymbol);
+            System.out.println("Ship successfully docked in " + navigateShip.getNav().getWaypointSymbol());
+
+            System.out.println("Refuel ship");
+            RefuelShipResponse refuelShipResponse = httpRequests.refuelShip(token, shipSymbol, consumedFuel);
+            price = refuelShipResponse.getTransaction().getPricePerUnit();
+            currentFuel = refuelShipResponse.getFuel().getCurrent();
+            System.out.println("Price per unit: " + price);
+            System.out.println("Units of fuel purchased: " + consumedFuel);
+            System.out.println("Current fuel: " + currentFuel);
+
+
         } else {
             throw new RuntimeException("You must accept the contract before moving forward");
         }
-
     }
 }
