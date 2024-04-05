@@ -1,16 +1,8 @@
 package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import org.accenture.entities.Contract;
-import org.accenture.entities.Nav;
 import org.accenture.entities.responses.*;
-
-//import static org.accenture.entities.responses.AllResponses.agentEndpoint;
 import java.time.ZonedDateTime;
 
 import static org.accenture.entities.responses.AllResponses.*;
@@ -42,11 +34,9 @@ public class Main {
             System.out.println("ARRIVAL TIME: " + arrivalTime.toString());
 
             int consumed = navigateShipResponse.getFuel().getConsumed().getAmount();
-            String arrival = String.valueOf(navigateShipResponse.getNav().getRoute().getArrival());
-            System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrival);
+            System.out.println("CONSUMED FUEL: "+ consumed + ", ARRIVAL TIME: " + arrivalTime);
 
-            int fuelToLoad = navigateShipResponse.getFuel().getConsumed().getAmount();
-            System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, fuelToLoad, arrivalTime));
+            System.out.println("TOTAL PRICE: " + refuelEndpoint(token, shipSymbol, consumed, arrivalTime));
 
         }
     }

@@ -141,9 +141,6 @@ public class AllResponses {
         }
 
         return mapper.convertValue(body.getData(), NavigateShipResponse.class);
-        /*System.out.println("CONSUMED: " + navigateShipResponse.getFuel().getConsumed().getAmount());
-        System.out.println("ARRIVAL: " + navigateShipResponse.getNav().getRoute().getArrival());
-        */
     }
 
     public static Nav dockEndpoint(String shipSymbol, String token) throws JsonProcessingException {
@@ -161,7 +158,6 @@ public class AllResponses {
         if (body.getError() != null) {
             System.out.println(body.getError().getMessage());
         }
-        //Nav nav = mapper.convertValue(body.getData(), Nav.class);
 
         return mapper.convertValue(body.getData().get("nav"), Nav.class);
     }
@@ -194,10 +190,7 @@ public class AllResponses {
         if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "IN_TRANSIT")) {
             System.out.println("SHIP STILL IN TRANSIT... AWAITING ARRIVAL");
             try {
-                ZonedDateTime currentTime = ZonedDateTime.now();
-                long secondsToArrive = currentTime.until(arrivalTime, ChronoUnit.SECONDS);
-                System.out.println(secondsToArrive);
-                Thread.sleep(secondsToArrive*1000);
+                Thread.sleep(ZonedDateTime.now().until(arrivalTime, ChronoUnit.MILLIS));
 
                 if(Objects.equals(getShipStatusEndpoint(token, shipSymbol), "IN_ORBIT")) {
                     System.out.println("SHIP STATUS IS: IN_ORBIT");
