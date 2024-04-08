@@ -1,11 +1,9 @@
 package org.accenture.entities.responses;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.accenture.entities.*;
 
 @Getter
-@ToString
 public class RegisterNewAgentResponse {
     private String token;
     private Agent agent;
