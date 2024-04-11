@@ -1,5 +1,6 @@
 package org.accenture;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kong.unirest.HttpRequestWithBody;
 import kong.unirest.HttpResponse;
 import kong.unirest.RequestBodyEntity;
@@ -76,4 +77,26 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         }
     }
+
+    @Test
+    public void whenTheContractIsnotAccepted_Bla() throws IOException, InterruptedException{
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+            HttpRequestWithBody httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestWithBodyRegisterNewAgent);
+            HttpRequestWithBody httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.responseError, false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithBodyAcceptContract);
+
+            try {
+                Main.main(new String[]{});
+                assertTrue(consoleOutput.contains("Token: 123"));
+            } catch (Error e) {
+                assertEquals("API Error", e.getMessage());
+            }
+            mockedStatic.verify(() -> Unirest.post("/register"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+        }
+
+    }
+
 }
