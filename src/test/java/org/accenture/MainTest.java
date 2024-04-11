@@ -79,19 +79,19 @@ public class MainTest {
     }
 
     @Test
-    public void whenTheContractIsnotAccepted_Bla() throws IOException, InterruptedException{
+    public void whenTheContractIsnotAccepted_ThenShowsMessageContractNotAccepted() throws IOException, InterruptedException{
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
             HttpRequestWithBody httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestWithBodyRegisterNewAgent);
-            HttpRequestWithBody httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.responseError, false);
+            HttpRequestWithBody httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.responseContractNotAccepted, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithBodyAcceptContract);
 
             try {
                 Main.main(new String[]{});
-                assertTrue(consoleOutput.contains("Token: 123"));
+                assertTrue(consoleOutput.contains("accepted: false"));
             } catch (Error e) {
-                assertEquals("API Error", e.getMessage());
+                assertEquals("Contract not accepted", e.getMessage());
             }
             mockedStatic.verify(() -> Unirest.post("/register"));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
