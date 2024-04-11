@@ -205,5 +205,12 @@ public class MockResponses {
                         }
                 }
             }""";
-
+    public static final String responseContractAccepted = """
+            {
+                "data": {
+                        "contract": {
+                            "accepted": true
+                        }
+                }
+            }""";
 }
