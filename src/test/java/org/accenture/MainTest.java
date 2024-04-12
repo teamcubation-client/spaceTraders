@@ -89,15 +89,4 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         }
     }
-
-            try {
-                Main.main(new String[]{});
-                assertTrue(consoleOutput.contains("Token: 123"));
-            } catch (Error e) {
-                assertEquals("API Error", e.getMessage());
-            }
-            mockedStatic.verify(() -> Unirest.post("/register"));
-            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
-        }
-    }
 }
