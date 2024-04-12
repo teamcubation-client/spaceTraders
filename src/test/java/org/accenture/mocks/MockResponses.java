@@ -213,4 +213,13 @@ public class MockResponses {
                         }
                 }
             }""";
+
+    public static final String responseValidateOrbitShip = """
+            {
+                "data": {
+                        "nav": {
+                                "status": "IN_ORBIT"
+                        }
+                }
+            }""";
 }

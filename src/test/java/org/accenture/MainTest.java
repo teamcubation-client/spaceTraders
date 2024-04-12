@@ -120,4 +120,47 @@ public class MainTest {
 
     }
 
+    @Test
+    public void whenValidateOrbitShip_thenTheCorrectStatusIsInOrbit() throws IOException, InterruptedException{
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+            HttpRequestWithBody httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestWithBodyRegisterNewAgent);
+            HttpRequestWithBody httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.responseContractAccepted, false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithBodyAcceptContract);
+
+            mockedStatic.when(() -> Unirest.post("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestWithBodyAcceptContract);
+
+
+            HttpRequestWithBody httpRequestWithBodyValidateOrbitShip = setMockUnirest(MockResponses.responseValidateOrbitShip, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestWithBodyValidateOrbitShip);
+
+            try {
+                Main.main(new String[]{});
+                assertTrue(consoleOutput.contains("status: IN_ORBIT"));
+            } catch (Error e) {
+                assertEquals("Contract not accepted", e.getMessage());
+            }
+            mockedStatic.verify(() -> Unirest.post("/register"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"));
+        }
+
+    }
+     /*private static void validateOrbitShip(ObjectMapper mapper, RegisterNewAgentResponse data) throws JsonProcessingException {
+        ResponseBody body;
+        HttpResponse<String> responseOrbitShip = Unirest.post("https://api.spacetraders.io/v2" +
+                        "/my/ships/{shipSymbol}/orbit")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer "+ data.getToken())
+                .routeParam("shipSymbol", data.getShip().getSymbol())
+                .asString();
+        body = mapper.readValue(responseOrbitShip.getBody(), ResponseBody.class);
+        if (mapper.readValue(responseOrbitShip.getBody(), ResponseBody.class).getError() != null) {
+            System.out.println(body.getError().getMessage());
+            throw new OrbitShipException();
+        }
+    }*/
+
 }
