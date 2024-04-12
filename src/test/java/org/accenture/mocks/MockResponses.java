@@ -74,6 +74,12 @@ public class MockResponses {
                 }
               } """;
 
+    public static final String responseDockShip = """
+        {
+            "data": {
+            }
+        }  """;
+
 
 
 }
