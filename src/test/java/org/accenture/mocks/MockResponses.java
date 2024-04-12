@@ -80,6 +80,14 @@ public class MockResponses {
             }
         }  """;
 
+    public static final String responseRefuelShip = """
+            {
+                "data": {
+                  "transaction": {
+                    "totalPrice": 0
+                  }
+                }
+            } """;
 
 
 }
