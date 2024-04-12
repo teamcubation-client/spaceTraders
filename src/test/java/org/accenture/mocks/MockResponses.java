@@ -195,4 +195,14 @@ public class MockResponses {
                 "token": "123"
               }
             }""";
+
+    public static final String acceptContractResponse = """
+            {
+               "data":{
+                  "contract":{
+                     "accepted":true
+                  }
+               }
+            }
+            """;
 }
