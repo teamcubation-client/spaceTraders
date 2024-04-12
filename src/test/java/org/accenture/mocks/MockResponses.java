@@ -51,4 +51,29 @@ public class MockResponses {
               ]
             }""";
 
+    public static final String responseOrbitShip = """
+        {
+            "data": {
+            }
+        }  """;
+
+    public static final String responseNavigateShip = """
+            {
+                "data": {
+                  "fuel": {
+                    "consumed": {
+                      "amount": 0
+                    }
+                  },
+                  "nav": {
+                    "route": {
+                      "departureTime": "2019-08-24T14:15:22Z",
+                      "arrival": "2019-08-24T14:15:22Z"
+                    }
+                  }
+                }
+              } """;
+
+
+
 }
