@@ -116,7 +116,7 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/register"));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
             mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"), times(2));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"));

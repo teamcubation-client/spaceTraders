@@ -21,7 +21,7 @@ public class MockResponses {
                       {
                         "tradeSymbol": "string",
                         "destinationSymbol": "string",
-                        "unitsRequired": 0
+                        "unitsRequired": 10
                       }
                     ]
                   }
