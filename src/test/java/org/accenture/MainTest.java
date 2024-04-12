@@ -95,27 +95,28 @@ public class MainTest {
         }
     }
 
-/*
+
     @Test
     public void acceptContractTest() {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequestWithBody httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, true);
+            HttpRequest httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestWithBodyRegisterNewAgent);
-            HttpRequestWithBody httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, true);
+            HttpRequest httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithBodyAcceptContract);
 
             try {
                Main.main(new String[]{});
-                //assertTrue(consoleOutput.contains("accepted: true"));
-            } catch (JsonProcessingException | InterruptedException e) {
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
+            assertTrue(outputStreamCaptor.toString().contains("accepted: true"));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         }
     }
 
- */
 }
 
