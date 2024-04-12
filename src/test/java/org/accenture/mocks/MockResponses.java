@@ -222,4 +222,60 @@ public class MockResponses {
                         }
                 }
             }""";
+    public static final String responselistWayPoints = """
+            {
+                "data": 
+                        [
+                            {
+                                "systemSymbol": "X1-ZY69",
+                                "symbol": "X1-ZY69-DC5X",
+                                "type": "ENGINEERED_ASTEROID",
+                                "traits": [
+                                    {
+                                        "symbol": "COMMON_METAL_DEPOSITS",
+                                        "name": "Common Metal Deposits",
+                                        "description": "A waypoint rich in common metal ores like iron, copper, and aluminum, essential for construction and manufacturing."
+                                    }
+                                ]
+                            }
+                        ]
+                        
+                
+            }""";
+
+    public static final String responseNavigateShip = """
+             {
+                "data": {
+                    "nav": {
+                        "route": {
+                            "arrival": "2024-04-12T02:19:41.374Z",
+                                    "departureTime": "2024-04-12T02:18:48.374Z"
+                        },
+                        "status": "IN_TRANSIT",
+                                "flightMode": "CRUISE"
+                    },
+                    "fuel": {
+                        "consumed": {
+                            "amount": 45,
+                                    "timestamp": "2024-04-12T02:18:48.390Z"
+                        }
+                    }
+                }
+             }""";
+    public static final String emptyResponse = """
+            {
+                "data": {
+                        }
+                }
+            }""";
+
+    public static final String refuelShipResponse = """
+    {
+        "data": {
+            "transaction": {
+                "totalPrice": 72
+            }
+        }
+    }""";
+
 }
