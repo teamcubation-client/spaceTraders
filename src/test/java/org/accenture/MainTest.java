@@ -89,4 +89,72 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         }
     }
+
+    @Test
+    public void whenTheContractIsNotAccepted_ThenShowMessageException() throws IOException, InterruptedException{
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+            HttpRequest httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST,true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestWithBodyRegisterNewAgent);
+            HttpRequest httpRequestWithoutBodyAcceptContract = setMockUnirest(MockResponses.responseContractNotAccepted, RestMethods.POST,false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithoutBodyAcceptContract);
+
+            try {
+                Main.main(new String[]{});
+                assertTrue(outputStreamCaptor.toString().contains("accepted: false"));
+            } catch (Error e) {
+                assertEquals("Contract not accepted", e.getMessage());
+            }
+            mockedStatic.verify(() -> Unirest.post("/register"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+        }
+
+    }
+
+    @Test
+    public void whenValidateOrbitShip_thenTheCorrectStatusIsInOrbit() throws IOException, InterruptedException{
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+
+            HttpRequest httpRequestWithBodyRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST,true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestWithBodyRegisterNewAgent);
+
+            HttpRequest httpRequestWithoutBodyAcceptContract = setMockUnirest(MockResponses.responseContractAccepted, RestMethods.POST,false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithoutBodyAcceptContract);
+
+            HttpRequest httpRequestWithoutBodylistWaypoints = setMockUnirest(MockResponses.responselistWayPoints,RestMethods.GET, false);
+            mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestWithoutBodylistWaypoints);
+
+            HttpRequest httpRequestWithBodyNavigateShip= setMockUnirest(MockResponses.responseNavigateShip, RestMethods.POST,true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestWithBodyNavigateShip);
+
+            HttpRequest httpRequestWithBodyShipSymbol=  setMockUnirest(MockResponses.emptyResponse, RestMethods.POST,true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/dock")).thenReturn(httpRequestWithBodyShipSymbol);
+
+            HttpRequest httpRequestWithBodyRefuelShipl=  setMockUnirest(MockResponses.refuelShipResponse, RestMethods.POST,true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestWithBodyRefuelShipl);
+
+            HttpRequest httpRequestWithBodyValidateOrbitShip=  setMockUnirest(MockResponses.responseValidateOrbitShip, RestMethods.POST,true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestWithBodyValidateOrbitShip);
+
+            Main.main(new String[]{});
+            assertTrue(outputStreamCaptor.toString().contains("Contract accepted"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
+            assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: X1-ZY69-DC5X"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship arrived at asteroid"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship docked at asteroid"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship refueled, total price: 72"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
+
+            mockedStatic.verify(() -> Unirest.post("/register"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+            mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"));
+
+        }
+
+    }
+
 }
