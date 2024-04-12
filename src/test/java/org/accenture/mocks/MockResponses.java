@@ -1,6 +1,10 @@
 package org.accenture.mocks;
 
+import java.time.ZonedDateTime;
+
 public class MockResponses {
+
+    private static final ZonedDateTime expirationDate = ZonedDateTime.now().plusMinutes(1);
     public static final String responseError = """
             {
               "error": {
@@ -10,295 +14,144 @@ public class MockResponses {
             }""";
     public static final String responseRegisterNewAgent = """
             {
-              "data": {
-                "agent": {
-                  "accountId": "string",
-                  "symbol": "string",
-                  "headquarters": "string",
-                  "credits": 0,
-                  "startingFaction": "string",
-                  "shipCount": 0
-                },
-                "contract": {
-                  "id": "123",
-                  "terms": {
-                    "deadline": "2019-08-24T14:15:22Z",
-                    "payment": {
-                      "onAccepted": 0,
-                      "onFulfilled": 0
+                "data": {
+                    "agent": {
+                        "symbol": "TQ41818",
+                        "headquarters": "X1-QV57-A1"
                     },
-                    "deliver": [
-                      {
-                        "tradeSymbol": "string",
-                        "destinationSymbol": "string",
-                        "unitsRequired": 0,
-                        "unitsFulfilled": 0
-                      }
-                    ]
-                  },
-                  "accepted": false,
-                  "fulfilled": false,
-                  
-                },
-                "faction": {
-                  "symbol": "COSMIC",
-                  "name": "string",
-                  "description": "string",
-                  "headquarters": "string",
-                  "traits": [
-                    {
-                      "symbol": "BUREAUCRATIC",
-                      "name": "string",
-                      "description": "string"
-                    }
-                  ],
-                  "isRecruiting": true
-                },
-                "ship": {
-                  "symbol": "string",
-                  "registration": {
-                    "name": "string",
-                    "factionSymbol": "string",
-                    "role": "FABRICATOR"
-                  },
-                  "nav": {
-                    "systemSymbol": "string",
-                    "waypointSymbol": "string",
-                    "route": {
-                      "destination": {
-                        "symbol": "string",
-                        "type": "PLANET",
-                        "systemSymbol": "string",
-                        "x": 0,
-                        "y": 0
-                      },
-                      "origin": {
-                        "symbol": "string",
-                        "type": "PLANET",
-                        "systemSymbol": "string",
-                        "x": 0,
-                        "y": 0
-                      },
-                      "departureTime": "2019-08-24T14:15:22Z",
-                      "arrival": "2019-08-24T14:15:22Z"
+                    "contract": {
+                        "id": "123",
+                        "terms": {
+                            "deliver": [
+                                {
+                                    "tradeSymbol": "IRON_ORE",
+                                    "destinationSymbol": "X1-QV57-H47",
+                                    "unitsRequired": "59"
+                                }
+                            ]
+                        }
                     },
-                    "status": "IN_TRANSIT",
-                    "flightMode": "CRUISE"
-                  },
-                  
-                  "frame": {
-                    "symbol": "FRAME_PROBE",
-                    "name": "string",
-                    "description": "string",
-                    "condition": 0,
-                    "integrity": 0,
-                    "moduleSlots": 0,
-                    "mountingPoints": 0,
-                    "fuelCapacity": 0,
-                    "requirements": {
-                      "power": 0,
-                      "crew": 0,
-                      "slots": 0
-                    }
-                  },
-                 
-                  "engine": {
-                    "symbol": "ENGINE_IMPULSE_DRIVE_I",
-                    "name": "string",
-                    "description": "string",
-                    "condition": 0,
-                    "integrity": 0,
-                    "speed": 1,
-                    "requirements": {
-                      "power": 0,
-                      "crew": 0,
-                      "slots": 0
-                    }
-                  },
-                  "cooldown": {
-                    "shipSymbol": "string",
-                    "totalSeconds": 0,
-                    "remainingSeconds": 0,
-                    "expiration": "2019-08-24T14:15:22Z"
-                  },
-                  "modules": [
-                    {
-                      "symbol": "MODULE_MINERAL_PROCESSOR_I",
-                      "capacity": 0,
-                      "range": 0,
-                      "name": "string",
-                      "description": "string",
-                      "requirements": {
-                        "power": 0,
-                        "crew": 0,
-                        "slots": 0
-                      }
-                    }
-                  ],
-                  "mounts": [
-                    {
-                      "symbol": "MOUNT_GAS_SIPHON_I",
-                      "name": "string",
-                      "description": "string",
-                      "strength": 0,
-                      "deposits": [
-                        "QUARTZ_SAND"
-                      ],
-                      "requirements": {
-                        "power": 0,
-                        "crew": 0,
-                        "slots": 0
-                      }
-                    }
-                  ],
-                  "cargo": {
-                    "capacity": 0,
-                    "units": 0,
-                    "inventory": [
-                      {
-                        "symbol": "PRECIOUS_STONES",
-                        "name": "string",
-                        "description": "string",
-                        "units": 1
-                      }
-                    ]
-                  },
-                  "fuel": {
-                    "current": 0,
-                    "capacity": 0,
-                    "consumed": {
-                      "amount": 0,
-                      "timestamp": "2019-08-24T14:15:22Z"
-                    }
-                  }
-                },
-                "token": "123"
-              }
+                    "ship": {
+                        "symbol": "TQ41818-1"
+                    },
+                    "token": "123"
+                }
             }""";
 
     public static final String responseAcceptContract = """
-{
-  "data": {
-    "agent": {
-      "accountId": "string",
-      "symbol": "string",
-      "headquarters": "string",
-      "credits": 0,
-      "startingFaction": "string",
-      "shipCount": 0
-    },
-    "contract": {
-      "id": "string",
-      "factionSymbol": "string",
-      "type": "PROCUREMENT",
-      "terms": {
-        "deadline": "2019-08-24T14:15:22Z",
-        "payment": {
-          "onAccepted": 0,
-          "onFulfilled": 0
-        },
-        "deliver": [
-          {
-            "tradeSymbol": "string",
-            "destinationSymbol": "string",
-            "unitsRequired": 0,
-            "unitsFulfilled": 0
-          }
-        ]
-      },
-      "accepted": false,
-      "fulfilled": false,
-      "expiration": "2019-08-24T14:15:22Z",
-      
-    }
-  }
-}""";
+            {
+                "data": {
+                    "contract": {
+                        
+                        "accepted": true
+                        }
+                        
+                    }
+                }
+            }""";
 
     public final static String responseListWaypointsInSystem = """
             {
-              "data": [
-                {
-                  "symbol": "string",
-                  "type": "PLANET",
-                  "systemSymbol": "string",
-                  "x": 0,
-                  "y": 0,
-                  "orbitals": [
+                "data": [
                     {
-                      "symbol": "string"
+                        "symbol": "X1-QV57-B9",
+                        "type": "PLANET",
+                        "systemSymbol": "X1-QV57",
+                        "x": 0,
+                        "y": 0,
+                        "orbitals": [
+                            {
+                                "symbol": "string"
+                            }
+                        ]
                     }
-                  ],
-               "traits": [
-                    {
-                      "symbol": "UNCHARTED",
-                      "name": "string",
-                      "description": "string"
-                    }
-                  ],
-                   
-                  "isUnderConstruction": true
-                }
-              ],
-              "meta": {
-                "total": 0,
-                "page": 1,
-                "limit": 10
-              }
+                ]
             }
             """;
 
     public final static String responseOrbitShipResponse = """
             {
               "data": {
-                "nav": {
-                  "systemSymbol": "string",
-                  "waypointSymbol": "string",
-                 
-                    "origin": {
-                      "symbol": "string",
-                      "type": "PLANET",
-                      "systemSymbol": "string",
-                      "x": 0,
-                      "y": 0
-                    },
-                    "departureTime": "2019-08-24T14:15:22Z",
-                    "arrival": "2019-08-24T14:15:22Z"
-                  },
-                  "status": "IN_TRANSIT",
-                  "flightMode": "CRUISE"
-                }
+                
               }
             }
             """;
 
     public final static String responseNavigateShip = """
             {
-              "data": {
-                "fuel": {
-                  "current": 0,
-                  "capacity": 0,
-                  "consumed": {
-                    "amount": 0,
-                    "timestamp": "2019-08-24T14:15:22Z"
-                  }
-                },
-                "nav": {
-                 "route": {
-                    "destination": {
-                      "symbol": "string",
-                      "type": "PLANET",
-                      "systemSymbol": "string",
-                      "x": 0,
-                      "y": 0
+                "data": {
+                    "fuel": {
+                        "consumed": {
+                            "amount": 0
+                        }
                     },
-                   
-                    "departureTime": "2019-08-24T14:15:22Z",
-                    "arrival": "2019-08-24T14:15:22Z"
-                  }
+                    "nav": {
+                        "route": {
+                            "departureTime": "2019-08-24T14:15:22Z",
+                            "arrival": "2019-08-24T14:15:22Z"
+                        }
+                    }
                 }
-               
-              
             }
             """;
+
+    public final static String responseDockShip = """
+            {
+                "data": {
+                   
+                }
+            }
+           """;
+
+    public final static String responseRefuelShip = """
+            {
+                "data": {
+                    "agent": {},
+                    "fuel": {},
+                    "transaction": {
+                    "totalPrice": 222255555
+                }
+                }
+                
+            }
+            """;
+
+    public static final String responseCreateSurvey = """
+            {
+              "data": {
+                "cooldown": {
+                  "shipSymbol": "string",
+                  "totalSeconds": 0,
+                  "remainingSeconds": 0,
+                  "expiration": "2019-08-24T14:15:22Z"
+                },
+                "surveys": [
+                  {
+                    "signature": "string",
+                    "symbol": "string",
+                    "deposits": [
+                      {
+                        "symbol": "IRON_ORE"
+                      }
+                    ],
+                    "expiration": \"""" + expirationDate + """ 
+                    ",
+                    "size": "SMALL"
+                  }
+                ]
+              }
+            }
+            """;
+    public static final String responseNotAcceptedContract = """
+            {
+                "data": {
+                    "contract": {
+                        
+                        "accepted": false
+                        }
+                        
+                    }
+                }
+            }""";
 
 }
