@@ -75,10 +75,13 @@ public class MainTest {
     public void whenRegisterNewAgent_ThenAcceptContract() throws IOException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
+
             HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
+
             HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.responseError, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
+
             try {
                 Main.main(new String[]{});
             } catch (Error e) {
