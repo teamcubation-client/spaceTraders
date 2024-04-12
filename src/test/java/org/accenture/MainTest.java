@@ -79,8 +79,11 @@ public class MainTest {
             HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
 
-            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.responseError, RestMethods.POST, false);
+            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.responseAcceptContract, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
+
+            HttpRequest httpRequestListWaypoints = setMockUnirest(MockResponses.responseError, RestMethods.GET, false);
+            mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListWaypoints);
 
             try {
                 Main.main(new String[]{});
@@ -88,8 +91,11 @@ public class MainTest {
                 assertEquals("API Error", e.getMessage());
             }
             assertTrue(outputStreamCaptor.toString().contains("Token: 123"));
+
             mockedStatic.verify(() -> Unirest.post("/register"));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+            mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
+
         }
     }
 }

@@ -32,4 +32,13 @@ public class MockResponses {
                 "token": "123"
               }
             }""";
+
+    public static final String responseAcceptContract = """
+        {
+            "data": {
+                "contract": {
+                    "accepted": true
+                }
+            }
+        }""";
 }
