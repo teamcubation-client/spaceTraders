@@ -41,4 +41,14 @@ public class MockResponses {
                 }
             }
         }""";
+
+    public static final String responseListWaypoints = """
+            {
+              "data": [
+                {
+                  "symbol": "AABBCC"
+                }
+              ]
+            }""";
+
 }
