@@ -66,6 +66,9 @@ public class MainTest {
             HttpRequestWithBody httpRequestWithBodyAcceptContract = setMockUnirest(MockResponses.responseError, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestWithBodyAcceptContract);
 
+            HttpRequestWithBody httpRequestWithBodyListWaypoints = setMockUnirest(MockResponses.responseListWaypointsInSystem, true);
+            mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestWithBodyListWaypoints);
+
             try {
                 Main.main(new String[]{});
                 assertTrue(consoleOutput.contains("Token: 123"));
@@ -76,4 +79,6 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         }
     }
+
+
 }

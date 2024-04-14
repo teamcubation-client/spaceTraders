@@ -38,8 +38,7 @@ public class MockResponses {
                   },
                   "accepted": false,
                   "fulfilled": false,
-                  "expiration": "2019-08-24T14:15:22Z",
-                  "deadlineToAccept": "2019-08-24T14:15:22Z"
+                  
                 },
                 "faction": {
                   "symbol": "COSMIC",
@@ -86,14 +85,7 @@ public class MockResponses {
                     "status": "IN_TRANSIT",
                     "flightMode": "CRUISE"
                   },
-                  "crew": {
-                    "current": 0,
-                    "required": 0,
-                    "capacity": 0,
-                    "rotation": "STRICT",
-                    "morale": 0,
-                    "wages": 0
-                  },
+                  
                   "frame": {
                     "symbol": "FRAME_PROBE",
                     "name": "string",
@@ -109,19 +101,7 @@ public class MockResponses {
                       "slots": 0
                     }
                   },
-                  "reactor": {
-                    "symbol": "REACTOR_SOLAR_I",
-                    "name": "string",
-                    "description": "string",
-                    "condition": 0,
-                    "integrity": 0,
-                    "powerOutput": 1,
-                    "requirements": {
-                      "power": 0,
-                      "crew": 0,
-                      "slots": 0
-                    }
-                  },
+                 
                   "engine": {
                     "symbol": "ENGINE_IMPULSE_DRIVE_I",
                     "name": "string",
@@ -195,4 +175,130 @@ public class MockResponses {
                 "token": "123"
               }
             }""";
+
+    public static final String responseAcceptContract = """
+{
+  "data": {
+    "agent": {
+      "accountId": "string",
+      "symbol": "string",
+      "headquarters": "string",
+      "credits": 0,
+      "startingFaction": "string",
+      "shipCount": 0
+    },
+    "contract": {
+      "id": "string",
+      "factionSymbol": "string",
+      "type": "PROCUREMENT",
+      "terms": {
+        "deadline": "2019-08-24T14:15:22Z",
+        "payment": {
+          "onAccepted": 0,
+          "onFulfilled": 0
+        },
+        "deliver": [
+          {
+            "tradeSymbol": "string",
+            "destinationSymbol": "string",
+            "unitsRequired": 0,
+            "unitsFulfilled": 0
+          }
+        ]
+      },
+      "accepted": false,
+      "fulfilled": false,
+      "expiration": "2019-08-24T14:15:22Z",
+      
+    }
+  }
+}""";
+
+    public final static String responseListWaypointsInSystem = """
+            {
+              "data": [
+                {
+                  "symbol": "string",
+                  "type": "PLANET",
+                  "systemSymbol": "string",
+                  "x": 0,
+                  "y": 0,
+                  "orbitals": [
+                    {
+                      "symbol": "string"
+                    }
+                  ],
+               "traits": [
+                    {
+                      "symbol": "UNCHARTED",
+                      "name": "string",
+                      "description": "string"
+                    }
+                  ],
+                   
+                  "isUnderConstruction": true
+                }
+              ],
+              "meta": {
+                "total": 0,
+                "page": 1,
+                "limit": 10
+              }
+            }
+            """;
+
+    public final static String responseOrbitShipResponse = """
+            {
+              "data": {
+                "nav": {
+                  "systemSymbol": "string",
+                  "waypointSymbol": "string",
+                 
+                    "origin": {
+                      "symbol": "string",
+                      "type": "PLANET",
+                      "systemSymbol": "string",
+                      "x": 0,
+                      "y": 0
+                    },
+                    "departureTime": "2019-08-24T14:15:22Z",
+                    "arrival": "2019-08-24T14:15:22Z"
+                  },
+                  "status": "IN_TRANSIT",
+                  "flightMode": "CRUISE"
+                }
+              }
+            }
+            """;
+
+    public final static String responseNavigateShip = """
+            {
+              "data": {
+                "fuel": {
+                  "current": 0,
+                  "capacity": 0,
+                  "consumed": {
+                    "amount": 0,
+                    "timestamp": "2019-08-24T14:15:22Z"
+                  }
+                },
+                "nav": {
+                 "route": {
+                    "destination": {
+                      "symbol": "string",
+                      "type": "PLANET",
+                      "systemSymbol": "string",
+                      "x": 0,
+                      "y": 0
+                    },
+                   
+                    "departureTime": "2019-08-24T14:15:22Z",
+                    "arrival": "2019-08-24T14:15:22Z"
+                  }
+                }
+               
+              
+            }
+            """;
+
 }
