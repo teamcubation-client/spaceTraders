@@ -205,4 +205,52 @@ public class MockResponses {
                }
             }
             """;
+
+    public static final String listWaypointResponse = """
+            {
+              "data": [
+                {
+                  "symbol": "string",
+                  "type": "PLANET",
+                  "systemSymbol": "string",
+                  "x": 0,
+                  "y": 0,
+                  "orbitals": [
+                    {
+                      "symbol": "string"
+                    }
+                  ],
+                  "orbits": "string",
+                  "faction": {
+                    "symbol": "COSMIC"
+                  },
+                  "traits": [
+                    {
+                      "symbol": "UNCHARTED",
+                      "name": "string",
+                      "description": "string"
+                    }
+                  ],
+                  "modifiers": [
+                    {
+                      "symbol": "STRIPPED",
+                      "name": "string",
+                      "description": "string"
+                    }
+                  ],
+                  "chart": {
+                    "waypointSymbol": "string",
+                    "submittedBy": "string",
+                    "submittedOn": "2019-08-24T14:15:22Z"
+                  },
+                  "isUnderConstruction": true
+                }
+              ],
+              "meta": {
+                "total": 0,
+                "page": 1,
+                "limit": 10
+              }
+            }
+            """;
 }
