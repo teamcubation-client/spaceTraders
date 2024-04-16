@@ -206,6 +206,16 @@ public class MockResponses {
             }
             """;
 
+    public static final String NotAcceptContractResponse = """
+            {
+               "data":{
+                  "contract":{
+                     "accepted":false
+                  }
+               }
+            }
+            """;
+
     public static final String listWaypointResponse = """
             {
               "data": [
@@ -247,6 +257,53 @@ public class MockResponses {
                   "status": "IN_TRANSIT",
                   "flightMode": "CRUISE"
                 }
+              }
+            }
+            """;
+
+    public static final String navigateShipResponse = """
+            {
+              "data": {
+                "fuel": {
+                  "current": 0,
+                  "capacity": 0,
+                  "consumed": {
+                    "amount": 0,
+                    "timestamp": "2019-08-24T14:15:22Z"
+                  }
+                },
+                "nav": {
+                  "systemSymbol": "string",
+                  "waypointSymbol": "string",
+                  "route": {
+                    "destination": {
+                      "symbol": "string",
+                      "type": "PLANET",
+                      "systemSymbol": "string",
+                      "x": 0,
+                      "y": 0
+                    },
+                    "origin": {
+                      "symbol": "string",
+                      "type": "PLANET",
+                      "systemSymbol": "string",
+                      "x": 0,
+                      "y": 0
+                    },
+                    "departureTime": "2019-08-24T14:15:22Z",
+                    "arrival": "2019-08-24T14:15:22Z"
+                  },
+                  "status": "IN_TRANSIT",
+                  "flightMode": "CRUISE"
+                },
+                "events": [
+                  {
+                    "symbol": "REACTOR_OVERLOAD",
+                    "component": "FRAME",
+                    "name": "string",
+                    "description": "string"
+                  }
+                ]
               }
             }
             """;

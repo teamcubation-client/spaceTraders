@@ -1,10 +1,6 @@
 package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import kong.unirest.HttpRequestWithBody;
-import kong.unirest.HttpResponse;
-import kong.unirest.RequestBodyEntity;
-import kong.unirest.Unirest;
 import kong.unirest.*;
 import org.accenture.mocks.MockResponses;
 import org.junit.jupiter.api.AfterEach;
@@ -123,6 +119,27 @@ public class MainTest {
     }
 
     @Test
+    @DisplayName("Test Contract not accepted")
+    public void testContractNotAccepted() throws JsonProcessingException, InterruptedException {
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
+            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.NotAcceptContractResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
+
+            try {
+                Main.main(new String[]{});
+            } catch (Error e) {
+                assertEquals("Contract not accepted", e.getMessage());
+            }
+
+            mockedStatic.verify(() -> Unirest.post("/register"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+        }
+    }
+
+    @Test
     @DisplayName("Test List Waypoints in System")
     public void testListWaypointsInSystem() throws JsonProcessingException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
@@ -135,7 +152,7 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListViewpoints);
             HttpRequest httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
-            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, false);
+            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
 
             try {
@@ -144,11 +161,49 @@ public class MainTest {
                 assertEquals("API Error", e.getMessage());
             }
 
-            assertTrue(outputStreamCaptor.toString().contains("accepted: true"));
             assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+            assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
             mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"));
+        }
+    }
+
+    @Test
+    @DisplayName("Test Navigate Ship")
+    public void testNavigateShip() throws JsonProcessingException, InterruptedException {
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
+            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
+            HttpRequest httpRequestListViewpoints = setMockUnirest(MockResponses.listWaypointResponse, RestMethods.GET, false);
+            mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListViewpoints);
+            HttpRequest httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
+            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
+            HttpRequest httpRequestDockShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/dock")).thenReturn(httpRequestDockShip);
+            HttpRequest httpRequestRefuelShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestRefuelShip);
+
+            try {
+                Main.main(new String[]{});
+            } catch (Error e) {
+                assertEquals("API Error", e.getMessage());
+            }
+
+            assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+            assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship arrived at asteroid"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship docked at asteroid"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+            mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"));
         }
     }
 
