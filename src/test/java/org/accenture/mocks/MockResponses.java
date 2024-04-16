@@ -214,42 +214,39 @@ public class MockResponses {
                   "type": "PLANET",
                   "systemSymbol": "string",
                   "x": 0,
-                  "y": 0,
-                  "orbitals": [
-                    {
-                      "symbol": "string"
-                    }
-                  ],
-                  "orbits": "string",
-                  "faction": {
-                    "symbol": "COSMIC"
-                  },
-                  "traits": [
-                    {
-                      "symbol": "UNCHARTED",
-                      "name": "string",
-                      "description": "string"
-                    }
-                  ],
-                  "modifiers": [
-                    {
-                      "symbol": "STRIPPED",
-                      "name": "string",
-                      "description": "string"
-                    }
-                  ],
-                  "chart": {
-                    "waypointSymbol": "string",
-                    "submittedBy": "string",
-                    "submittedOn": "2019-08-24T14:15:22Z"
-                  },
-                  "isUnderConstruction": true
+                  "y": 0
                 }
-              ],
-              "meta": {
-                "total": 0,
-                "page": 1,
-                "limit": 10
+              ]
+            }
+            """;
+
+    public static final String orbitShipResponse = """
+            {
+              "data": {
+                "nav": {
+                  "systemSymbol": "string",
+                  "waypointSymbol": "string",
+                  "route": {
+                    "destination": {
+                      "symbol": "string",
+                      "type": "PLANET",
+                      "systemSymbol": "string",
+                      "x": 0,
+                      "y": 0
+                    },
+                    "origin": {
+                      "symbol": "string",
+                      "type": "PLANET",
+                      "systemSymbol": "string",
+                      "x": 0,
+                      "y": 0
+                    },
+                    "departureTime": "2019-08-24T14:15:22Z",
+                    "arrival": "2019-08-24T14:15:22Z"
+                  },
+                  "status": "IN_TRANSIT",
+                  "flightMode": "CRUISE"
+                }
               }
             }
             """;

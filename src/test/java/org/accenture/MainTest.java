@@ -133,19 +133,22 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
             HttpRequest httpRequestListViewpoints = setMockUnirest(MockResponses.listWaypointResponse, RestMethods.GET, false);
             mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListViewpoints);
-            HttpRequest httpRequestOrbitShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
+            HttpRequest httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
+            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
 
             try {
                 Main.main(new String[]{});
             } catch (Error e) {
-                assertThrows(Error.class, () -> Main.main(new String[]{}));
+                assertEquals("API Error", e.getMessage());
             }
 
             assertTrue(outputStreamCaptor.toString().contains("accepted: true"));
             assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
             mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"));
         }
     }
 
