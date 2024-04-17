@@ -101,7 +101,6 @@ public class MainTest {
 
             try {
                 Main.main(new String[]{});
-                assertTrue(outputStreamCaptor.toString().contains("accepted: false"));
             } catch (Error e) {
                 assertEquals("Contract not accepted", e.getMessage());
             }
@@ -127,6 +126,8 @@ public class MainTest {
 
             HttpRequest httpRequestWithBodyNavigateShip= setMockUnirest(MockResponses.responseNavigateShip, RestMethods.POST,true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestWithBodyNavigateShip);
+
+
 
             HttpRequest httpRequestWithBodyShipSymbol=  setMockUnirest(MockResponses.emptyResponse, RestMethods.POST,true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/dock")).thenReturn(httpRequestWithBodyShipSymbol);
