@@ -134,8 +134,10 @@ public class MainTest {
             HttpRequest httpRequestWithBodyRefuelShipl=  setMockUnirest(MockResponses.refuelShipResponse, RestMethods.POST,true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestWithBodyRefuelShipl);
 
-            HttpRequest httpRequestWithBodyValidateOrbitShip=  setMockUnirest(MockResponses.responseValidateOrbitShip, RestMethods.POST,true);
+            //HttpRequest httpRequestWithBodyValidateOrbitShip=  setMockUnirest(MockResponses.responseValidateOrbitShip, RestMethods.POST,true);
+            HttpRequest httpRequestWithBodyValidateOrbitShip=  setMockUnirest(MockResponses.emptyResponse, RestMethods.POST,true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestWithBodyValidateOrbitShip);
+
 
             Main.main(new String[]{});
             assertTrue(outputStreamCaptor.toString().contains("Contract accepted"));
