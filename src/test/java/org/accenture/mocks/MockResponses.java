@@ -46,13 +46,6 @@ public class MockResponses {
                   "name": "string",
                   "description": "string",
                   "headquarters": "string",
-                  "traits": [
-                    {
-                      "symbol": "BUREAUCRATIC",
-                      "name": "string",
-                      "description": "string"
-                    }
-                  ],
                   "isRecruiting": true
                 },
                 "ship": {
@@ -283,27 +276,37 @@ public class MockResponses {
                       "x": 0,
                       "y": 0
                     },
-                    "origin": {
-                      "symbol": "string",
-                      "type": "PLANET",
-                      "systemSymbol": "string",
-                      "x": 0,
-                      "y": 0
-                    },
                     "departureTime": "2019-08-24T14:15:22Z",
                     "arrival": "2019-08-24T14:15:22Z"
                   },
                   "status": "IN_TRANSIT",
                   "flightMode": "CRUISE"
-                },
-                "events": [
-                  {
-                    "symbol": "REACTOR_OVERLOAD",
-                    "component": "FRAME",
-                    "name": "string",
-                    "description": "string"
+                }
+              }
+            }
+            """;
+
+    public static final String refuelShipResponse = """
+            {
+              "data": {
+                "fuel": {
+                  "current": 0,
+                  "capacity": 0,
+                  "consumed": {
+                    "amount": 0,
+                    "timestamp": "2019-08-24T14:15:22Z"
                   }
-                ]
+                },
+                "transaction": {
+                  "waypointSymbol": "string",
+                  "shipSymbol": "string",
+                  "tradeSymbol": "string",
+                  "type": "PURCHASE",
+                  "units": 0,
+                  "pricePerUnit": 0,
+                  "totalPrice": 0,
+                  "timestamp": "2019-08-24T14:15:22Z"
+                }
               }
             }
             """;
