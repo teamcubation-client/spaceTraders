@@ -1,6 +1,13 @@
 package org.accenture.mocks;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+
 public class MockResponses {
+
+    private static final String zoneTime = String.valueOf(ZonedDateTime.now());
+    private static final String zoneTimePost = String.valueOf(ZonedDateTime.now().toLocalDateTime().plus(2, ChronoUnit.SECONDS)
+                                                    .atZone(ZonedDateTime.now().getZone()));
     public static final String responseError = """
             {
               "error": {
@@ -63,22 +70,26 @@ public class MockResponses {
                 
             }""";
 
+
     public static final String responseNavigateShip = """
-             {
-                "data": {
-                    "nav": {
-                        "route": {
-                            "arrival": "2024-04-12T02:19:41.374Z",
-                                    "departureTime": "2024-04-12T02:18:48.374Z"
-                        }
-                    },
-                    "fuel": {
-                        "consumed": {
-                            "amount": 45
-                        }
+            {
+               "data": {
+                   "nav": {
+                       "route": {
+                           "arrival": \" """  +zoneTime+ """
+                         ","departureTime": \" """ +zoneTimePost+ """
+                           "             
+                       }
+                   },
+                   "fuel": {
+                       "consumed": {
+                           "amount": 45
+                       }
                     }
-                }
-             }""";
+               }
+            }
+            """;
+
     public static final String emptyResponse = """
             {
                 "data": {
