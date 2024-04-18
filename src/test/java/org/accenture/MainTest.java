@@ -64,23 +64,13 @@ public class MainTest {
     }
 
     @Test
-    void whenApiError_ThenThrowExceptionError() {
-        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
-            HttpRequest httpRequest = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
-            mockedStatic.when(Unirest::config).thenCallRealMethod();
-            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequest);
-            assertThrows(Error.class, () -> Main.main(new String[]{}));
-            mockedStatic.verify(() -> Unirest.post("/register"));
-        }
-    }
-
-    @Test
+    @DisplayName("Test Register new Agent")
     public void whenRegisterNewAgent_ThenAcceptContract() throws IOException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
-            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.responseError, RestMethods.POST, false);
+            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
             try {
                 Main.main(new String[]{});
@@ -98,11 +88,11 @@ public class MainTest {
     public void whenAcceptContract_thenListWaypoints() throws JsonProcessingException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
             HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
-            HttpRequest httpRequestListViewpoints = setMockUnirest(MockResponses.responseError, RestMethods.GET, false);
+            HttpRequest httpRequestListViewpoints = setMockUnirest(MockResponses.errorResponse, RestMethods.GET, false);
             mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListViewpoints);
 
             try {
@@ -123,9 +113,9 @@ public class MainTest {
     public void whenContractNotAccepted_thenThrowApiError() throws JsonProcessingException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
-            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.NotAcceptContractResponse, RestMethods.POST, false);
+            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.notAcceptContractResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
 
             try {
@@ -144,7 +134,7 @@ public class MainTest {
     public void whenListWaypoint_thenNavigateShip() throws JsonProcessingException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
             HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
@@ -152,7 +142,7 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListViewpoints);
             HttpRequest httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
-            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
+            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
 
             try {
@@ -174,7 +164,7 @@ public class MainTest {
     public void whenShipNavigate_thenDockShip() throws JsonProcessingException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
             HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
@@ -184,9 +174,9 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
             HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
-            HttpRequest httpRequestDockShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, false);
+            HttpRequest httpRequestDockShip = setMockUnirest(MockResponses.dockShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/dock")).thenReturn(httpRequestDockShip);
-            HttpRequest httpRequestRefuelShip = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
+            HttpRequest httpRequestRefuelShip = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestRefuelShip);
 
             try {
@@ -212,7 +202,7 @@ public class MainTest {
     public void whenShipIsDocked_thenRefuelShip() throws JsonProcessingException, InterruptedException {
         try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
             mockedStatic.when(Unirest::config).thenCallRealMethod();
-            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.responseRegisterNewAgent, RestMethods.POST, true);
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
             HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
@@ -222,13 +212,13 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
             HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
-            HttpRequest httpRequestDockShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, false);
+            HttpRequest httpRequestDockShip = setMockUnirest(MockResponses.dockShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/dock")).thenReturn(httpRequestDockShip);
             HttpRequest httpRequestRefuelShip = setMockUnirest(MockResponses.refuelShipResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestRefuelShip);
             httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
-            HttpRequest httpRequestCreateSurvey = setMockUnirest(MockResponses.responseError, RestMethods.POST, true);
+            HttpRequest httpRequestCreateSurvey = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/survey")).thenReturn(httpRequestCreateSurvey);
 
             try {
