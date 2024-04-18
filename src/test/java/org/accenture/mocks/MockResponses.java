@@ -26,7 +26,7 @@ public class MockResponses {
                           "terms": {
                               "deliver": [
                                   {
-                                      "tradeSymbol": "string",
+                                      "tradeSymbol": "ALUMINUM_ORE",
                                       "destinationSymbol": "string",
                                       "unitsRequired": 40
                                   }
@@ -105,5 +105,28 @@ public class MockResponses {
             }
         }
     }""";
+
+    public static final String createSurveyResponse = """
+            {
+                 "data": {
+                     "cooldown": {
+                         "totalSeconds": "1"
+                                      
+                     },
+                     
+                     "surveys": [
+                         {
+                             "deposits": [
+                                 {
+                                     "symbol": "ALUMINUM_ORE"
+                                 }
+                             ],
+                             "expiration": \" """ +zoneTimePost+ """
+                                            "
+                         }
+                     ]
+                 }
+            }
+            """;
 
 }

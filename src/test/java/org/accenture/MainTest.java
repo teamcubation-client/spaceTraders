@@ -135,12 +135,13 @@ public class MainTest {
             HttpRequest httpRequestWithBodyRefuelShipl=  setMockUnirest(MockResponses.refuelShipResponse, RestMethods.POST,true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestWithBodyRefuelShipl);
 
-            //HttpRequest httpRequestWithBodyValidateOrbitShip=  setMockUnirest(MockResponses.responseValidateOrbitShip, RestMethods.POST,true);
             HttpRequest httpRequestWithBodyValidateOrbitShip=  setMockUnirest(MockResponses.emptyResponse, RestMethods.POST,true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestWithBodyValidateOrbitShip);
 
+            HttpRequest httpRequestWithBodyCreateSurvey=  setMockUnirest(MockResponses.responseError, RestMethods.POST,false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/survey")).thenReturn(httpRequestWithBodyCreateSurvey);
 
-            Main.main(new String[]{});
+            assertThrows(Error.class,() ->Main.main(new String[]{} ));
             assertTrue(outputStreamCaptor.toString().contains("Contract accepted"));
             assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
             assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: X1-ZY69-DC5X"));
@@ -155,7 +156,7 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"));
-
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/survey"));
         }
 
     }
