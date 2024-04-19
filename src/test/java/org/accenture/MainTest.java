@@ -218,7 +218,7 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestRefuelShip);
             httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
-            HttpRequest httpRequestCreateSurvey = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
+            HttpRequest httpRequestCreateSurvey = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, false);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/survey")).thenReturn(httpRequestCreateSurvey);
 
             try {

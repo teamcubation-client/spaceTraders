@@ -12,31 +12,22 @@ public class MockResponses {
             {
                 "data": {
                     "agent": {
-                        "headquarters": "string"
+                        "headquarters": "X1-HK21-MP5"
                     },
                     "contract": {
                         "id": "123",
                         "terms": {
                             "deliver": [
                                 {
-                                    "tradeSymbol": "string",
-                                    "destinationSymbol": "string",
-                                    "unitsRequired": 0
+                                    "tradeSymbol": "COPPER_ORE",
+                                    "destinationSymbol": "X1-AR15-QZ8",
+                                    "unitsRequired": 55
                                 }
                             ]
-                        },
-                        "accepted": false
+                        }
                     },
                     "ship": {
-                        "symbol": "string",
-                        "nav": {
-                            "waypointSymbol": "string",
-                            "route": {
-                                "departureTime": "2019-08-24T14:15:22Z",
-                                "arrival": "2019-08-24T14:15:22Z"
-                            },
-                            "status": "IN_TRANSIT"
-                        },
+                        "symbol": "MILLENNIUM FALCON",
                         "fuel": {
                             "consumed": {
                                 "amount": 0
@@ -71,7 +62,7 @@ public class MockResponses {
             {
               "data": [
                 {
-                  "symbol": "string"
+                  "symbol": "X1-JK42-XM4"
                 }
               ]
             }
@@ -93,7 +84,7 @@ public class MockResponses {
                   }
                 },
                 "nav": {
-                  "waypointSymbol": "string",
+                  "waypointSymbol": "X1-JK42-XM4",
                   "route": {
                     "departureTime": "2019-08-24T14:15:22Z",
                     "arrival": "2019-08-24T14:15:22Z"
