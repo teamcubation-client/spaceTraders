@@ -1,6 +1,10 @@
 package org.accenture.mocks;
 
+import java.time.ZonedDateTime;
+
 public class MockResponses {
+    private static ZonedDateTime expiration = ZonedDateTime.now().plusMinutes(3);
+
     public static final String errorResponse = """
             {
               "error": {
@@ -130,11 +134,19 @@ public class MockResponses {
                         "symbol": "COPPER_ORE"
                       }
                     ],
-                    "expiration": "2024-04-23T18:35:32Z",
+                    "expiration": \"""" + expiration + """
+                     ",
                     "size": "MODERATE"
                   }
                 ]
               }
+            }
+            """;
+
+    public static final String jettisonCargoResponse = """
+            {
+              "data": {
+                
             }
             """;
 
@@ -151,7 +163,7 @@ public class MockResponses {
                   "shipSymbol": "string",
                   "yield": {
                     "symbol": "PRECIOUS_STONES",
-                    "units": 0
+                    "units": 5
                   }
                 },
                 "cargo": {

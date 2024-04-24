@@ -2,6 +2,7 @@ package org.accenture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kong.unirest.*;
+import org.accenture.entities.Survey;
 import org.accenture.mocks.MockResponses;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ public class MainTest {
             when(httpRequestWithBody.header(anyString(), anyString())).thenReturn(httpRequestWithBody);
             if (hasBody) {
                 when(httpRequestWithBody.body(anyString())).thenReturn(requestBodyEntity);
+                when(httpRequestWithBody.body(any(Survey.class))).thenReturn(requestBodyEntity);
                 when(requestBodyEntity.asString()).thenReturn(httpResponse);
             } else {
                 when(httpRequestWithBody.asString()).thenReturn(httpResponse);
@@ -222,6 +224,10 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/survey")).thenReturn(httpRequestCreateSurvey);
             HttpRequest httpRequestExtractResourceWithSurvey = setMockUnirest(MockResponses.extractResourceWithSurveyResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey")).thenReturn(httpRequestExtractResourceWithSurvey);
+            HttpRequest httpRequestJettisonCargo = setMockUnirest(MockResponses.jettisonCargoResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/jettison")).thenReturn(httpRequestJettisonCargo);
+            HttpRequest httpRequestDeliverCargo = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/deliver")).thenReturn(httpRequestDeliverCargo);
 
             try {
                 Main.main(new String[]{});
@@ -238,11 +244,11 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
             mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"), times(2));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"), times(2));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"), times(2));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"));
             mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/survey"));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey"), atLeastOnce());
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey"));
         }
     }
 }
