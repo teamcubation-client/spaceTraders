@@ -224,10 +224,10 @@ public class MainTest {
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/survey")).thenReturn(httpRequestCreateSurvey);
             HttpRequest httpRequestExtractResourceWithSurvey = setMockUnirest(MockResponses.extractResourceWithSurveyResponse, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey")).thenReturn(httpRequestExtractResourceWithSurvey);
-            HttpRequest httpRequestJettisonCargo = setMockUnirest(MockResponses.jettisonCargoResponse, RestMethods.POST, true);
-            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/jettison")).thenReturn(httpRequestJettisonCargo);
-            HttpRequest httpRequestDeliverCargo = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
+            HttpRequest httpRequestDeliverCargo = setMockUnirest(MockResponses.deliverCargoToContract, RestMethods.POST, true);
             mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/deliver")).thenReturn(httpRequestDeliverCargo);
+            HttpRequest httpRequestFulfillContract = setMockUnirest(MockResponses.fulfillContractResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/fulfill")).thenReturn(httpRequestFulfillContract);
 
             try {
                 Main.main(new String[]{});
@@ -243,12 +243,13 @@ public class MainTest {
             assertTrue(outputStreamCaptor.toString().contains("Survey created"));
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
             mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"), times(2));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"), times(2));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"), times(2));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/survey"));
-            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"), times(4));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"), times(4));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"), times(4));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"), times(3));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/survey"), atMost(2));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey"), times(2));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/fulfill"));
         }
     }
 }

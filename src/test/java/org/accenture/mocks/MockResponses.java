@@ -152,41 +152,85 @@ public class MockResponses {
 
     public static final String extractResourceWithSurveyResponse = """
             {
-              "data": {
-                "cooldown": {
-                  "shipSymbol": "string",
-                  "totalSeconds": 0,
-                  "remainingSeconds": 0,
-                  "expiration": "2019-08-24T14:15:22Z"
-                },
-                "extraction": {
-                  "shipSymbol": "string",
-                  "yield": {
-                    "symbol": "PRECIOUS_STONES",
-                    "units": 5
-                  }
-                },
-                "cargo": {
-                  "capacity": 0,
-                  "units": 0,
-                  "inventory": [
-                    {
-                      "symbol": "PRECIOUS_STONES",
-                      "name": "string",
-                      "description": "string",
-                      "units": 1
+                "data": {
+                    "cooldown": {
+                        "shipSymbol": "string",
+                        "totalSeconds": 0,
+                        "expiration": "2019-08-24T14:15:22Z"
+                    },
+                    "extraction": {
+                        "shipSymbol": "string",
+                        "yield": {
+                            "symbol": "COPPER_ORE",
+                            "units": 5
+                        }
+                    },
+                    "cargo": {
+                        "capacity": 0,
+                        "units": 0,
+                        "inventory": [
+                            {
+                                "symbol": "PRECIOUS_STONES",
+                                "name": "string",
+                                "description": "string",
+                                "units": 1
+                            }
+                        ]
                     }
-                  ]
-                },
-                "events": [
-                  {
-                    "symbol": "REACTOR_OVERLOAD",
-                    "component": "FRAME",
-                    "name": "string",
-                    "description": "string"
-                  }
-                ]
-              }
+                }
+            }
+            """;
+
+    public static final String deliverCargoToContract = """
+            {
+                "data": {
+                    "contract": {
+                        "id": "string",
+                        "terms": {
+                            "deadline": "2019-08-24T14:15:22Z",
+                            "deliver": [
+                                {
+                                    "tradeSymbol": "COPPER_ORE",
+                                    "destinationSymbol": "X1-AR15-QZ8",
+                                    "unitsRequired": 10,
+                                    "unitsFulfilled": 0
+                                }
+                            ]
+                        },
+                        "expiration": "2019-08-24T14:15:22Z",
+                        "deadlineToAccept": "2019-08-24T14:15:22Z"
+                    },
+                    "cargo": {
+                        "capacity": 0,
+                        "units": 0,
+                        "inventory": [
+                            {
+                                "symbol": "PRECIOUS_STONES",
+                                "name": "string",
+                                "description": "string",
+                                "units": 1
+                            }
+                        ]
+                    }
+                }
+            }
+            """;
+
+    public static final String fulfillContractResponse = """
+            {
+                "data": {
+                    "contract": {
+                        "id": "string",
+                        "terms": {
+                            "payment": {
+                                "onFulfilled": 0
+                            },
+                            "fulfilled": true,
+                            "expiration": "2019-08-24T14:15:22Z",
+                            "deadlineToAccept": "2019-08-24T14:15:22Z"
+                        }
+                    }
+                }
             }
             """;
 }
