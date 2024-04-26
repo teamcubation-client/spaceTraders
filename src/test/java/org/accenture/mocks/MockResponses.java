@@ -220,14 +220,14 @@ public class MockResponses {
             {
               "data": {
                 "agent": {
-                 \s
+                 
                 },
                 "contract": {
                   "id": "string",
                   "terms": {
                     "deadline": "2019-08-24T14:15:22Z",
                     "payment": {
-                     \s
+                     
                     },
                     "deliver": [
                       {
