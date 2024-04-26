@@ -252,5 +252,62 @@ public class MainTest {
             mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/fulfill"));
         }
     }
+
+    @Test
+    @DisplayName("Test Jettison Cargo")
+    public void whenExtractWrongResource_thenJettisonCargo() throws JsonProcessingException, InterruptedException {
+        try (MockedStatic<Unirest> mockedStatic = mockStatic(Unirest.class)) {
+            mockedStatic.when(Unirest::config).thenCallRealMethod();
+            HttpRequest httpRequestRegisterNewAgent = setMockUnirest(MockResponses.registerNewAgentResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/register")).thenReturn(httpRequestRegisterNewAgent);
+            HttpRequest httpRequestAcceptContract = setMockUnirest(MockResponses.acceptContractResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/accept")).thenReturn(httpRequestAcceptContract);
+            HttpRequest httpRequestListViewpoints = setMockUnirest(MockResponses.listWaypointResponse, RestMethods.GET, false);
+            mockedStatic.when(() -> Unirest.get("/systems/{systemSymbol}/waypoints")).thenReturn(httpRequestListViewpoints);
+            HttpRequest httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
+            HttpRequest httpRequestNavigateShip = setMockUnirest(MockResponses.navigateShipResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/navigate")).thenReturn(httpRequestNavigateShip);
+            HttpRequest httpRequestDockShip = setMockUnirest(MockResponses.dockShipResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/dock")).thenReturn(httpRequestDockShip);
+            HttpRequest httpRequestRefuelShip = setMockUnirest(MockResponses.refuelShipResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/refuel")).thenReturn(httpRequestRefuelShip);
+            httpRequestOrbitShip = setMockUnirest(MockResponses.orbitShipResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/orbit")).thenReturn(httpRequestOrbitShip);
+            HttpRequest httpRequestCreateSurvey = setMockUnirest(MockResponses.createSurveyResponse, RestMethods.POST, false);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/survey")).thenReturn(httpRequestCreateSurvey);
+            HttpRequest httpRequestExtractWrongResource = setMockUnirest(MockResponses.extractWrongResourceWithSurvey, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey")).thenReturn(httpRequestExtractWrongResource);
+            HttpRequest httpRequestJettisonCargo = setMockUnirest(MockResponses.jettisonCargoResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/ships/{shipSymbol}/jettison")).thenReturn(httpRequestJettisonCargo);
+            HttpRequest httpRequestDeliverCargo = setMockUnirest(MockResponses.errorResponse, RestMethods.POST, true);
+            mockedStatic.when(() -> Unirest.post("/my/contracts/{contractId}/deliver")).thenReturn(httpRequestDeliverCargo);
+
+
+
+            try {
+                Main.main(new String[]{});
+            } catch (Error e) {
+                assertEquals("API Error", e.getMessage());
+            }
+
+            assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+            assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship arrived at asteroid"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship docked at asteroid"));
+            assertTrue(outputStreamCaptor.toString().contains("Ship refueled"));
+            assertTrue(outputStreamCaptor.toString().contains("Survey created"));
+            assertTrue(outputStreamCaptor.toString().contains("Extracted other resource, jettisoning"));
+            mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
+            mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"), times(2));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/navigate"), times(2));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/dock"), times(2));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/refuel"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/survey"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/extract/survey"));
+            mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/jettison"));
+        }
+    }
 }
 

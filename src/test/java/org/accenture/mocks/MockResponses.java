@@ -233,4 +233,35 @@ public class MockResponses {
                 }
             }
             """;
+
+    public static final String extractWrongResourceWithSurvey = """
+            {
+                "data": {
+                    "cooldown": {
+                        "shipSymbol": "string",
+                        "totalSeconds": 0,
+                        "expiration": "2019-08-24T14:15:22Z"
+                    },
+                    "extraction": {
+                        "shipSymbol": "string",
+                        "yield": {
+                            "symbol": "PRECIOUS_STONES",
+                            "units": 5
+                        }
+                    },
+                    "cargo": {
+                        "capacity": 0,
+                        "units": 0,
+                        "inventory": [
+                            {
+                                "symbol": "PRECIOUS_STONES",
+                                "name": "string",
+                                "description": "string",
+                                "units": 1
+                            }
+                        ]
+                    }
+                }
+            }
+            """;
 }
