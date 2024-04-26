@@ -1,6 +1,7 @@
 package org.accenture;
 
 import kong.unirest.*;
+import org.accenture.entities.Survey;
 import org.accenture.mocks.MockResponses;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ public class MainTest {
             when(httpRequestWithBody.header(anyString(), anyString())).thenReturn(httpRequestWithBody);
             if (hasBody) {
                 when(httpRequestWithBody.body(anyString())).thenReturn(requestBodyEntity);
+                when(httpRequestWithBody.body(any(Survey.class))).thenReturn(requestBodyEntity);
                 when(requestBodyEntity.asString()).thenReturn(httpResponse);
             } else {
                 when(httpRequestWithBody.asString()).thenReturn(httpResponse);
