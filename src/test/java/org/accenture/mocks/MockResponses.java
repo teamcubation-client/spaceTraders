@@ -218,21 +218,32 @@ public class MockResponses {
 
     public static final String fulfillContractResponse = """
             {
-                "data": {
-                    "contract": {
-                        "id": "string",
-                        "terms": {
-                            "payment": {
-                                "onFulfilled": 0
-                            },
-                            "fulfilled": true,
-                            "expiration": "2019-08-24T14:15:22Z",
-                            "deadlineToAccept": "2019-08-24T14:15:22Z"
-                        }
-                    }
+              "data": {
+                "agent": {
+                 \s
+                },
+                "contract": {
+                  "id": "string",
+                  "terms": {
+                    "deadline": "2019-08-24T14:15:22Z",
+                    "payment": {
+                     \s
+                    },
+                    "deliver": [
+                      {
+                        "tradeSymbol": "COPPER_ORE",
+                        "destinationSymbol": "X1-AR15-QZ8",
+                        "unitsRequired": 10
+                      }
+                    ]
+                  },
+                  "fulfilled": true,
+                  "expiration": "2019-08-24T14:15:22Z",
+                  "deadlineToAccept": "2019-08-24T14:15:22Z"
                 }
+              }
             }
-            """;
+           \s""";
 
     public static final String extractWrongResourceWithSurvey = """
             {
