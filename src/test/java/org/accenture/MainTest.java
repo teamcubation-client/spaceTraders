@@ -159,7 +159,7 @@ public class MainTest {
             assertEquals("API Error", e.getMessage());
         }
 
-        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: " + "X1-JK42-XM4"));
         assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
         mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
@@ -191,7 +191,7 @@ public class MainTest {
             assertEquals("API Error", e.getMessage());
         }
 
-        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: " + "X1-JK42-XM4"));
         assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
         assertTrue(outputStreamCaptor.toString().contains("Ship arrived at asteroid"));
         assertTrue(outputStreamCaptor.toString().contains("Ship docked at asteroid"));
@@ -237,15 +237,15 @@ public class MainTest {
             assertEquals("API Error", e.getMessage());
         }
 
-        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: " + "X1-JK42-XM4"));
         assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
         assertTrue(outputStreamCaptor.toString().contains("Ship arrived at asteroid"));
         assertTrue(outputStreamCaptor.toString().contains("Ship docked at asteroid"));
         assertTrue(outputStreamCaptor.toString().contains("Ship refueled"));
         assertTrue(outputStreamCaptor.toString().contains("Survey created"));
-        assertTrue(outputStreamCaptor.toString().contains("Extracted "));
-        assertTrue(outputStreamCaptor.toString().contains("Contract delivery, units fulfilled:"));
-        assertTrue(outputStreamCaptor.toString().contains("Contract fulfilled, payment received:"));
+        assertTrue(outputStreamCaptor.toString().contains("Extracted " + 5 + " COPPER_ORE"));
+        assertTrue(outputStreamCaptor.toString().contains("Contract delivery, units fulfilled: " + 5));
+        assertTrue(outputStreamCaptor.toString().contains("Contract fulfilled, payment received: " + 5000));
         mockedStatic.verify(() -> Unirest.post("/my/contracts/{contractId}/accept"));
         mockedStatic.verify(() -> Unirest.get("/systems/{systemSymbol}/waypoints"));
         mockedStatic.verify(() -> Unirest.post("/my/ships/{shipSymbol}/orbit"), times(4));
@@ -292,7 +292,7 @@ public class MainTest {
             assertEquals("API Error", e.getMessage());
         }
 
-        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: "));
+        assertTrue(outputStreamCaptor.toString().contains("Asteroid symbol: " + "X1-JK42-XM4"));
         assertTrue(outputStreamCaptor.toString().contains("Ship moved into orbit"));
         assertTrue(outputStreamCaptor.toString().contains("Ship arrived at asteroid"));
         assertTrue(outputStreamCaptor.toString().contains("Ship docked at asteroid"));

@@ -193,7 +193,7 @@ public class MockResponses {
                                     "tradeSymbol": "COPPER_ORE",
                                     "destinationSymbol": "X1-AR15-QZ8",
                                     "unitsRequired": 10,
-                                    "unitsFulfilled": 0
+                                    "unitsFulfilled": 5
                                 }
                             ]
                         },
@@ -218,32 +218,30 @@ public class MockResponses {
 
     public static final String fulfillContractResponse = """
             {
-              "data": {
-                "agent": {
-                 
-                },
-                "contract": {
-                  "id": "string",
-                  "terms": {
-                    "deadline": "2019-08-24T14:15:22Z",
-                    "payment": {
-                     
-                    },
-                    "deliver": [
-                      {
-                        "tradeSymbol": "COPPER_ORE",
-                        "destinationSymbol": "X1-AR15-QZ8",
-                        "unitsRequired": 10
-                      }
-                    ]
-                  },
-                  "fulfilled": true,
-                  "expiration": "2019-08-24T14:15:22Z",
-                  "deadlineToAccept": "2019-08-24T14:15:22Z"
-                }
-              }
-            }
-           \s""";
+                 "data": {
+                     "agent": {},
+                     "contract": {
+                         "id": "string",
+                         "terms": {
+                             "deadline": "2019-08-24T14:15:22Z",
+                             "payment": {
+                                 "onFulfilled": 5000
+                             },
+                             "deliver": [
+                                 {
+                                     "tradeSymbol": "COPPER_ORE",
+                                     "destinationSymbol": "X1-AR15-QZ8",
+                                     "unitsRequired": 10
+                                 }
+                             ]
+                         },
+                         "fulfilled": true,
+                         "expiration": "2019-08-24T14:15:22Z",
+                         "deadlineToAccept": "2019-08-24T14:15:22Z"
+                     }
+                 }
+             }
+           """;
 
     public static final String extractWrongResourceWithSurvey = """
             {
